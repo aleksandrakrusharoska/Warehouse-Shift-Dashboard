@@ -44,7 +44,7 @@ window.LAYOUT = {
         {row: "REC", pos: [420, 262]},      //                      Receiving
         {row: "IM_P", pos: [390, 350]},     // Main WHS - Picking: IM (RM Picking, RM Delivery, FG Pick-up)
         {row: "IM_T", pos: [300, 418]},     // IM (FG Pick-up, FG Packaging) – Prod. Material Transport
-        {row: "ASM_P", pos: [390, 486]},    // Assembly
+        {row: "ASM_P", pos: [262, 486]},    // Assembly – left in the aisle, clear of the Main WHS – Picking label
         {row: "OBC_P", pos: [300, 555]},    // OBC
         {row: "EP_P", pos: [494, 410]},     // EP – RM Picking, RM Putaway          (pick racks)
         {row: "EP_T", pos: [544, 490]},     // EP – RM Delivery, FG Packaging, FG Pick-up

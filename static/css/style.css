@@ -2911,20 +2911,8 @@ body.area-pop-open {
 .map-foot b.st-ok { color: var(--ok); }
 
 /* =====================================================================
-   v11 – page like the mockup: the Warehouse layout card full width with a wide map,
-   the Shift report below it
+   v11 – map card header / footer spacing
    ===================================================================== */
-
-.layout {
-    grid-template-columns: minmax(0, 1fr) !important;
-}
-
-.map-card {
-    height: auto !important;
-    min-height: 0 !important;
-    border-radius: 20px !important;
-    overflow: visible !important;
-}
 
 .map-head {
     align-items: flex-end !important;
@@ -3031,8 +3019,11 @@ body.area-pop-open {
 .map-card .legend .dot.st-warning { background: #C98A12; }
 .map-card .legend .dot.st-critical { background: #C8372D; }
 
+/* map in the left panel, Shift report in the right panel (same height); the map fills the rest of
+   the card and scene3d.js scales the 1080 × 760 stage to fit it */
 .map-card .scene-wrap {
-    flex: none !important;
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
     aspect-ratio: auto !important;
     margin: 0 !important;
     border-radius: 14px !important;
@@ -3044,9 +3035,8 @@ body.area-pop-open {
 }
 
 .map-card #scene {
-    position: relative !important;
-    inset: auto !important;
-    height: 760px;
+    position: absolute !important;
+    inset: 0 !important;
     overflow: hidden;
 }
 
@@ -3191,8 +3181,30 @@ body.area-pop-open {
 .map-card .map-foot b.st-ok { color: #1E6B42; }
 .map-card .map-foot .muted { color: #5B636B; }
 
-/* page content as wide as the mockup card (1320 px), centred; Shift report below the map */
-.layout {
-    max-width: calc(1320px + 2.5rem);
-    margin: 0 auto;
+/* labels and pictograms keep a readable size when the map is scaled down (--ui set in scene3d.js) */
+.wl-label {
+    transform: scale(var(--ui, 1));
+    transform-origin: 50% 100%;
+}
+
+.wl-pic {
+    transform: scale(var(--ui, 1));
+    transform-origin: 50% 100%;
+}
+
+.wl-pic.linked, .wl-pic:hover {
+    transform: scale(calc(var(--ui, 1) * 1.18));
+}
+
+/* bigger map: the left panel gets more of the width (the Shift report scales itself to fit, fitReport),
+   and the map card has less padding around the map */
+@media (min-width: 1101px) {
+    .layout {
+        grid-template-columns: minmax(0, 1.15fr) minmax(640px, 0.85fr);
+    }
+}
+
+.map-card {
+    gap: 10px !important;
+    padding: 16px 18px !important;
 }

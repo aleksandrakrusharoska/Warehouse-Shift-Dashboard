@@ -44,7 +44,8 @@ function add(parent, style, tag = "div") {
 }
 
 // ---- floors
-add(plane, box(0, 0, 212, 292) + "background:#CFE9E5;border:3px solid #009688;border-radius:4px");    // truck docks
+const DOCK_D = 276;   // depth of the green truck dock (last truck ends at 261)
+add(plane, box(0, 0, 212, DOCK_D) + "background:#CFE9E5;border:3px solid #009688;border-radius:4px");    // truck docks
 add(plane, box(212, 0, 387, 578) + grid + "border:2px solid #8FA2B8;border-bottom:0");                  // upper hall
 add(plane, box(16, 577, 583, fy(992) - 577) + grid + "border:2px solid #8FA2B8;border-top:0");          // lower hall
 add(plane, box(-260, -125, 120, 192) + "background:#B9C3CE;border-radius:4px");                          // Hall 21 yard
@@ -94,11 +95,6 @@ function cub(x, y, w, d, h, k, z) {
 
 const RACK = {top: "#F4F6F9", front: "#CDD6E0", side: "#B8C3CF", line: "#8E9BAA", pattern: "repeating-linear-gradient(180deg,transparent 0 11px,rgba(90,105,125,0.4) 11px 12px)"};
 const PAL = {top: "#D29A62", front: "#B07843", side: "#956236", line: "#76502C"};
-const TRL = {top: "#F2F4F7", front: "#DCE1E7", side: "linear-gradient(90deg,#5E6A79 0 10%,#C9D0D8 10% 100%)", line: "#8C97A3", pattern: "linear-gradient(180deg,#5E6A79 0 10%,#D3D9E0 10% 55%,#E6EAEE 55% 100%)"};
-const CAB = {
-    top: "#3B63D8", front: "#2F56BF", side: "#26489F", line: "#1D3A85", left: "linear-gradient(90deg,#26489F 0 50%,#16223A 50% 88%,#26489F 88%)",
-    pattern: "linear-gradient(180deg,transparent 0 50%,#16223A 50% 86%,transparent 86%)", extra: "background-size:58% 100%;background-position:left;background-repeat:no-repeat;"
-};
 const TYRE = {top: "#2B2F35", front: "#1F2328", side: "#1A1D21", line: "#0E1013"};
 const METAL = {top: "#9AA6B2", front: "#7D8995", side: "#6B7682", line: "#4E5966"};
 const MACH = {top: "#C7CFD8", front: "#9AA6B2", side: "#86929F", line: "#5E6C7B"};
@@ -118,16 +114,55 @@ cub(212, 0, 3, 292, 44, WALL);
 cub(599, 608, 98, 3, 44, WALL);    // repack / kitting room
 cub(694, 608, 3, 292, 44, WALL);
 
-// trucks at the loading docks
-[30, 104, 172, 236].forEach((y) => {
-    const d = 26;
-    cub(140, y - 1, 30, d + 2, 9, TYRE);
-    cub(62, y + 4, 4, d - 8, 9, METAL);
-    cub(48, y, 136, d, 32, TRL, 9);
-    cub(4, y + 2, 50, d - 4, 5, METAL, 3);
-    cub(8, y - 1, 12, d + 2, 8, TYRE);
-    cub(30, y - 1, 18, d + 2, 8, TYRE);
-    cub(4, y, 26, d, 33, CAB, 8);
+// trucks at the loading docks: cab-over tractor (front to the left) + box trailer backed up to the dock
+const TRAILER = {
+    top: "#F7F9FB",
+    front: "#F2F5F8",   // long side towards the viewer: smooth white with a blue stripe at the bottom
+    pattern: "linear-gradient(180deg,transparent 0 10%,#1E66F5 10% 18%,transparent 18%)",   // side faces stand up from the floor: 0 % = bottom
+    left: "#D3D9E0",    // front wall of the trailer
+    side: "linear-gradient(180deg,#C9D0D8 0 48%,#7D8995 48% 52%,#C9D0D8 52%)",   // rear doors (dock side)
+    line: "#8C97A3"
+};
+const CAB_LOW = {   // lower cab: grille + bumper at the front, fuel tank on the side
+    top: "#2F56BF", front: "#284CAD", side: "#21418F", line: "#1D3A85",
+    left: "linear-gradient(90deg,#AEB8C3 0 30%,#16223A 30% 100%)",
+    pattern: "linear-gradient(180deg,transparent 0 35%,#CDD5DE 35% 80%,transparent 80%)",
+    extra: "background-size:34% 100%;background-position:85% 0;background-repeat:no-repeat;"
+};
+const CAB_HIGH = {  // cabin: windshield at the front, side window + door line
+    top: "linear-gradient(90deg,#4C75E8,#3B63D8)", front: "#2F56BF", side: "#26489F", line: "#1D3A85",
+    left: "linear-gradient(90deg,#26489F 0 30%,#16223A 30% 88%,#26489F 88%)",
+    pattern: "linear-gradient(180deg,transparent 0 8%,#1B2A44 8% 50%,transparent 50%)," +
+        "linear-gradient(90deg,transparent 0 96%,#1D3A85 96% 100%)",
+    extra: "background-size:58% 100%,100% 100%;background-position:25% 0,0 0;background-repeat:no-repeat;"
+};
+const DEFLECTOR = {top: "#4C75E8", front: "#3B63D8", side: "#2F56BF", left: "#2F56BF", line: "#1D3A85"};
+const CHROME = {top: "#E2E8EF", front: "#B8C2CD", side: "#9AA6B2", line: "#6B7682"};
+
+// round wheel standing on the visible long side of the truck (y = that side)
+function wheel(cx, y, dia) {
+    add(plane, box(cx - dia / 2, fy(y) + 0.6, dia, dia) + "transform-origin:0 0;transform:rotateX(90deg);border-radius:50%;" +
+        "background:radial-gradient(circle,#E2E8EF 0 16%,#7D8995 18% 30%,#23272D 33% 100%);border:1px solid #0E1013");
+}
+
+// 4 lanes, equally spaced (68); the dock floor ends a short way below the last truck (DOCK_D)
+[0, 1, 2, 3].map((i) => 31 + i * 68).forEach((y) => {
+    const d = 26, kz = 1;      // truck width on the floor, height factor
+    const tc = (x, dy, w, dd, h, k, z = 0) => cub(x, y + dy, w, dd, h * kz, k, z * kz);
+    add(plane, box(0, fy(y) - 1, 190, d + 6) + "background:rgba(20,30,50,0.2);border-radius:6px;filter:blur(2px);transform:translateZ(0.3px)");   // shadow
+    tc(6, 4, 178, d - 8, 4, METAL, 6);                       // chassis
+    tc(8, 2, 12, d - 4, 9, TYRE);                            // axles (dark, between the wheels)
+    tc(34, 2, 14, d - 4, 9, TYRE);
+    tc(140, 2, 36, d - 4, 9, TYRE);
+    tc(46, 0, 138, d, 32, TRAILER, 10);                      // trailer box
+    tc(62, 3, 3, 3, 10, METAL);                              // landing legs
+    tc(62, d - 6, 3, 3, 10, METAL);
+    tc(4, 1, 30, d - 2, 12, CAB_LOW, 6);                     // lower cab, grille, bumper
+    tc(6, 1, 26, d - 2, 22, CAB_HIGH, 18);                   // cabin
+    tc(12, 3, 18, d - 6, 4, DEFLECTOR, 40);                  // roof deflector
+    tc(33, d - 6, 2, 2, 24, CHROME, 14);                     // exhaust stack
+    tc(8, d - 1, 2, 3, 6, CHROME, 27);                       // mirror
+    [[14, y + d - 1], [41, y + d - 1], [150, y + d], [166, y + d]].forEach(([cx, wy]) => wheel(cx, wy, 11 * kz));
 });
 
 // sorting line, traymaster
@@ -200,7 +235,7 @@ function door(x, y, side, noArc) {
 }
 
 door(596, 236, "R");   // incoming / outgoing, east
-door(212, 262, "L");   // main hall by the docks
+door(212, 244, "L");   // main hall by the docks (apron + arrows stay on the dock floor)
 door(212, 380, "L");   // main hall, west
 door(16, 641, "L");    // production material transport, west (aisle 1)
 door(16, 841, "L");    // production material transport, west (aisle 3)
@@ -303,13 +338,15 @@ const pics = {};   // row id -> button
     });
 
 // ---------------------------------------------------------------- fit the stage into the map
-// 1080 × 760 stage; up to 1247 px wide it is shown 1:1 (centred), wider maps scale it up, narrower down
+// 1080 × 760 stage scaled to fit the map panel (width and height), centred
 function fit() {
-    const w = host.clientWidth;
-    if (!w) return;
-    const s = Math.min(w >= 1247 ? w / 1247 : Math.min(1, w / STAGE_W), 1.6);
+    const w = host.clientWidth, h = host.clientHeight;
+    if (!w || !h) return;
+    const s = Math.min(w / STAGE_W, h / STAGE_H, 1.6);
+    stage.style.top = `${Math.round((h - STAGE_H * s) / 2)}px`;
     stage.style.transform = `translateX(-50%) scale(${s})`;
-    host.style.height = `${Math.round(STAGE_H * s)}px`;
+    // labels and pictograms shrink less than the scene, so they stay readable in a small panel
+    stage.style.setProperty("--ui", Math.min(Math.sqrt(1 / s), 1.45).toFixed(3));
 }
 
 new ResizeObserver(fit).observe(host);
