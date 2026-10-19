@@ -1,0 +1,5 @@
+fastapi>=0.115
+uvicorn[standard]>=0.30
+# only needed for tools/import_ilu.py (reading the Excel ILU matrix)
+pyxlsb>=1.0.10
+openpyxl>=3.1

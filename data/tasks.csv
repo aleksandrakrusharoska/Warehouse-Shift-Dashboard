@@ -1,0 +1,18 @@
+id,row_id,code,name,skills
+IM_P,IM_P,RM_PICK_DEL_FGP,"RM Picking, RM Delivery, FG Pick-up","2.1;3.5"
+EP_P,EP_P,RM_PICK_PUT,"RM Picking, RM Putaway","2.1;1.3"
+ASM_P,ASM_P,RM_PICK_FG_PUT,"RM Picking, FG Putaway","2.1;3.6"
+OBC_P,OBC_P,RM_PICK_DEL_REPACK,"RM Picking, Delivery to re-pack","2.1;3.5"
+IM_T,IM_T,FG_PICK_PACK,"FG Pick-up, FG Packaging","3.5;3.4"
+EP_T,EP_T,RM_DEL_FG_PACK_FG_PICK,"RM Delivery, FG Packaging, FG Pick-up","3.5;3.4"
+ASM_T1,ASM_T1,RM_DEL_EMPTIES,"RM Delivery, Empties","3.1;3.2"
+ASM_T2,ASM_T2,FG_PACK_FG_PICK,"FG Packaging, FG Pick-up","3.4;3.5"
+OBC_T,OBC_T,FG_PACK_FG_PUT,"FG Packaging, FG Putaway","3.4;3.6"
+REC,REC,RECEIVING,Receiving,"1.1;1.3"
+SHP,SHP,SHIPPING,Shipping,"4.1;4.5"
+H21,H21,HALL21,"Hall 21","1.3;3.5"
+RPK,RPK,RM_DEL_EMPTIES_OBC,"RM Delivery to OBC, RM Empties from OBC to Repack","3.5;3.2"
+TRM,TRM,TRAYMASTER,Traymaster,2.7
+SRT,SRT,SORTING,Sorting,2.3
+OTH,OTH,OTHER_SUPPORT,"Delivery for sorting, inventory, supporting other actions","3.5;2.4"
+ABS,ABS,BACKUP,"Possible back-up",

@@ -1,0 +1,3198 @@
+/* =====================================================================
+   WHS Shift Dashboard – clean consolidated stylesheet
+   ===================================================================== */
+
+:root {
+    --bg: #eef2f8;
+    --card: #ffffff;
+    --line: #e2e8f2;
+    --line-strong: #cfd9e8;
+    --text: #13233a;
+    --muted: #64748b;
+    --accent: #2563eb;
+    --accent-soft: #e8f0fe;
+    --shadow: 0 1px 2px rgba(15, 35, 65, .05),
+    0 8px 24px rgba(15, 35, 65, .06);
+    --shadow-lg: 0 24px 60px rgba(15, 35, 65, .22);
+    --radius: 16px;
+    --ok: #16a34a;
+    --ok-soft: #e7f6ec;
+    --ok-line: #bfe5cc;
+    --warning: #d99a00;
+    --warning-soft: #fdf3d8;
+    --warning-line: #f3dc95;
+    --critical: #dc2626;
+    --critical-soft: #fdecec;
+    --critical-line: #f5c6c6;
+    --none: #6f9bd1;
+    /* JavaScript can overwrite these per map/report area */
+    --area-color: #6f9bd1;
+    --sec-color: #6f9bd1;
+    /* ILU */
+    --ilu-U-bg: #d3eedc;
+    --ilu-U-text: #1d6b3a;
+    --ilu-U-line: #a9dbbb;
+    --ilu-U-bar: #7fc79b;
+    --ilu-L-bg: #e8f7d8;
+    --ilu-L-text: #4a7a1e;
+    --ilu-L-line: #c7e8a5;
+    --ilu-L-bar: #b9e08f;
+    --ilu-I-bg: #fdf1d2;
+    --ilu-I-text: #94620b;
+    --ilu-I-line: #f3d98f;
+    --ilu-I-bar: #f2d27a;
+}
+
+body {
+    min-height: 100vh;
+    color: var(--text);
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    background: radial-gradient(1200px 600px at 20% -10%, #ffffff 0%, var(--bg) 60%) fixed;
+}
+
+button {
+    font: inherit;
+}
+
+.muted {
+    color: var(--muted);
+}
+
+/* =====================================================================
+   Header
+   ===================================================================== */
+
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: .75rem;
+    padding: .75rem 1.25rem;
+    border-bottom: 1px solid var(--line);
+    background: rgba(255, 255, 255, .84);
+    backdrop-filter: blur(12px);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+}
+
+.brand-mark {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    color: #fff;
+    font-size: 1.15rem;
+    border-radius: 11px;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, .35);
+}
+
+.title {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: .01em;
+}
+
+.top-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+.clock {
+    margin: 0 .25rem;
+    color: var(--muted);
+    font-size: .9rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.seg {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #f1f5fb;
+}
+
+.seg-label {
+    padding: 0 .5rem 0 .6rem;
+    color: var(--muted);
+    font-size: .78rem;
+}
+
+.seg button {
+    padding: .28rem .75rem;
+    border: 0;
+    border-radius: 999px;
+    color: var(--text);
+    font-size: .85rem;
+    font-weight: 500;
+    background: transparent;
+    transition: background .15s ease;
+}
+
+.seg button:hover {
+    background: #e3eaf5;
+}
+
+.seg button.active {
+    color: var(--accent);
+    font-weight: 700;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(15, 35, 65, .15);
+}
+
+.btn-soft {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    padding: .4rem .8rem;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    color: var(--text);
+    font-size: .88rem;
+    font-weight: 500;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(15, 35, 65, .04);
+    transition: all .15s ease;
+}
+
+.btn-soft:hover {
+    border-color: var(--line-strong);
+    background: #f8fafd;
+    transform: translateY(-1px);
+}
+
+.btn-soft i {
+    color: var(--accent);
+}
+
+.btn-soft.icon-only {
+    padding: .4rem .6rem;
+}
+
+.round-btn {
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    color: var(--text);
+    background: #fff;
+    transition: all .15s ease;
+}
+
+.round-btn:hover:not(:disabled) {
+    border-color: var(--line-strong);
+    background: #f1f5fb;
+}
+
+.round-btn:disabled {
+    opacity: .4;
+}
+
+.round-btn.danger {
+    color: var(--critical);
+    border-color: var(--critical-line);
+}
+
+.round-btn.danger:hover {
+    background: var(--critical-soft);
+}
+
+.round-btn.warning {
+    color: #b45309;
+    border-color: #facc15;
+    background: #fffbeb;
+}
+
+.round-btn.good {
+    color: #15803d;
+    border-color: #86efac;
+    background: #f0fdf4;
+}
+
+.round-btn.neutral {
+    color: #475569;
+    border-color: #cbd5e1;
+    background: #f8fafc;
+}
+
+/* =====================================================================
+   Main layout
+   ===================================================================== */
+
+.layout {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(700px, 1.1fr);
+    gap: 1.1rem;
+    padding: 1.1rem 1.25rem;
+}
+
+.card-x {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--card);
+    box-shadow: var(--shadow);
+}
+
+.side {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: calc(100vh - 100px);
+    gap: 1.1rem;
+}
+
+.grow {
+    flex: 1;
+}
+
+.card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+.card-head h3, .map-head h2 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+@media (max-width: 1100px) {
+    .layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =====================================================================
+   Warehouse map
+   ===================================================================== */
+
+.map-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 560px;
+    height: calc(100vh - 100px);
+    overflow: hidden;
+}
+
+.map-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1rem 1.15rem .6rem;
+}
+
+.legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .9rem;
+    color: var(--muted);
+    font-size: .8rem;
+}
+
+.legend > span {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+}
+
+.dot {
+    width: .6rem;
+    height: .6rem;
+    border-radius: 50%;
+}
+
+.dot.st-ok, .pill.st-ok .dot, .map-chip.st-ok .dot {
+    background: var(--ok);
+}
+
+.dot.st-warning, .pill.st-warning .dot, .map-chip.st-warning .dot {
+    background: var(--warning);
+}
+
+.dot.st-critical, .pill.st-critical .dot, .map-chip.st-critical .dot {
+    background: var(--critical);
+}
+
+.scene-wrap {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    margin: 0 .6rem .6rem;
+    overflow: hidden;
+    border-radius: 12px;
+    background: #0d2a33 url("preview.webp") center / cover no-repeat;
+}
+
+#scene {
+    position: absolute;
+    inset: 0;
+    cursor: default;
+}
+
+#scene canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.map-label {
+    left: 0;
+    top: 0;
+    transition: box-shadow .15s ease, transform .15s ease;
+}
+
+.map-label::before {
+    flex-shrink: 0;
+}
+
+.map-label.hover, .map-label:hover, .map-label.selected {
+    box-shadow: 0 0 0 2px var(--area-color, var(--accent)), 0 6px 18px color-mix(in srgb, var(--area-color, var(--accent)) 28%, transparent);
+}
+
+.leader {
+    fill: none;
+}
+
+.leader-dot {
+    fill: #ffffff;
+}
+
+.leader.st-ok, .leader-dot.st-ok {
+    stroke: var(--ok);
+}
+
+.leader.st-warning, .leader-dot.st-warning {
+    stroke: var(--warning);
+}
+
+.leader.st-critical, .leader-dot.st-critical {
+    stroke: var(--critical);
+}
+
+.scene-tools {
+    position: absolute;
+    right: .75rem;
+    left: .75rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: .5rem;
+    pointer-events: none;
+}
+
+.scene-tools > * {
+    pointer-events: auto;
+}
+
+#offMap {
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+.map-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    padding: .4rem .85rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--text);
+    font-size: .85rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, .95);
+    box-shadow: var(--shadow);
+}
+
+.map-chip:hover {
+    border-color: var(--accent);
+}
+
+.worker-tip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    opacity: 0;
+    pointer-events: none;
+    background: rgba(255, 255, 255, .97);
+    box-shadow: 0 4px 12px rgba(15, 35, 65, .16);
+    transition: opacity .12s ease;
+}
+
+.worker-tip.show {
+    opacity: 1;
+}
+
+.worker-tip .tip-title {
+    display: flex;
+    font-weight: 600;
+}
+
+.worker-tip .tip-sub {
+    margin-top: .15rem;
+    color: var(--text);
+    font-size: .82rem;
+}
+
+.worker-tip .tip-hint {
+    margin-top: .3rem;
+    color: var(--muted);
+    font-size: .72rem;
+}
+
+/* =====================================================================
+   Status pills
+   ===================================================================== */
+
+.pill {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    padding: .2rem .6rem;
+    border: 1px solid;
+    border-radius: 999px;
+    font-size: .75rem;
+    font-weight: 650;
+    white-space: nowrap;
+}
+
+.pill .dot {
+    width: .5rem;
+    height: .5rem;
+}
+
+.pill.st-ok {
+    color: #166534;
+    border-color: var(--ok-line);
+    background: var(--ok-soft);
+}
+
+.pill.st-warning {
+    color: #8a5a00;
+    border-color: var(--warning-line);
+    background: var(--warning-soft);
+}
+
+.pill.st-critical {
+    color: #b42323;
+    border-color: var(--critical-line);
+    background: var(--critical-soft);
+}
+
+/* =====================================================================
+   Area / task popup
+   ===================================================================== */
+
+.modal-backdrop.show {
+    opacity: .35;
+    backdrop-filter: blur(2px);
+}
+
+.x-modal {
+    border: 0;
+    border-radius: 20px;
+    box-shadow: var(--shadow-lg);
+}
+
+.x-modal-head {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .9rem 1.1rem;
+    border-bottom: 1px solid var(--line);
+    background: #fbfcfe;
+}
+
+#areaModalHead button, #areaModalHead a, #areaModalHead .crumbs {
+    cursor: pointer;
+}
+
+.x-title {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.x-title i {
+    color: var(--accent);
+}
+
+.crumbs {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    flex-wrap: wrap;
+    gap: .35rem;
+    min-width: 0;
+}
+
+.crumbs a {
+    color: var(--accent);
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.crumbs a:hover {
+    text-decoration: underline;
+}
+
+.crumbs span {
+    font-weight: 700;
+}
+
+.crumbs i {
+    color: var(--muted);
+    font-size: .7rem;
+}
+
+.modal.fade .modal-dialog {
+    transform: translateY(16px) scale(.98);
+    transition: transform .22s ease-out;
+}
+
+.modal.show .modal-dialog {
+    transform: none;
+}
+
+.modal-body {
+    padding: 1.2rem 1.3rem 1.4rem;
+}
+
+.slide-in {
+    animation: slideIn .28s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(18px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.view-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.view-head h2 {
+    font-weight: 750;
+}
+
+.eyebrow {
+    color: var(--muted);
+    font-weight: 650;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+}
+
+.item {
+    display: grid;
+    align-items: center;
+    width: 100%;
+    padding: .8rem .95rem .8rem 0;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    text-align: left;
+    background: #fff;
+    transition: all .15s ease;
+}
+
+.item:hover {
+    border-color: var(--line-strong);
+    box-shadow: var(--shadow);
+    transform: translateY(-1px);
+}
+
+.item-bar {
+    align-self: stretch;
+    width: 5px;
+    border-radius: 0 4px 4px 0;
+}
+
+.item.st-ok .item-bar {
+    background: var(--ok);
+}
+
+.item.st-warning .item-bar {
+    background: var(--warning);
+}
+
+.item.st-critical .item-bar {
+    background: var(--critical);
+}
+
+.item-main {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: .15rem;
+}
+
+.item-title {
+    font-weight: 700;
+}
+
+.item-sub {
+    color: var(--muted);
+    font-weight: 500;
+}
+
+.item-names {
+    overflow: hidden;
+    color: var(--text);
+    font-size: .82rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.item-names i {
+    color: var(--ok);
+}
+
+.item-nums {
+    display: flex;
+    align-items: baseline;
+    justify-self: start;
+    gap: .2rem;
+    color: var(--muted);
+    font-size: .85rem;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.item-nums b {
+    color: var(--text);
+    font-size: 1.25rem;
+}
+
+.item > .pill {
+    justify-self: start;
+}
+
+.item .chev {
+    justify-self: end;
+    color: var(--muted);
+}
+
+/* Scan card */
+
+.scan-card {
+    display: flex;
+    align-items: center;
+    border: 1.5px dashed #93b4f0;
+}
+
+.scan-icon {
+    display: grid;
+    place-items: center;
+    flex: none;
+    color: #fff;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+
+.scan-title {
+    font-size: .95rem;
+    font-weight: 700;
+}
+
+.scan-input {
+    width: 100%;
+    padding: .25rem 0;
+    border: 0;
+    outline: 0;
+    color: var(--text);
+    background: transparent;
+}
+
+.scan-hint {
+    color: var(--muted);
+    font-size: .75rem;
+}
+
+.scan-feedback {
+    display: none;
+    align-items: center;
+    gap: .5rem;
+    padding: .6rem .85rem;
+    border-radius: 12px;
+    font-size: .92rem;
+    font-weight: 600;
+}
+
+.scan-feedback.show {
+    display: flex;
+    animation: slideIn .25s ease-out;
+}
+
+.scan-feedback.ok {
+    color: #166534;
+    background: var(--ok-soft);
+}
+
+.scan-feedback.info {
+    color: #1e4fa3;
+    background: var(--accent-soft);
+}
+
+.scan-feedback.bad {
+    color: #b42323;
+    background: var(--critical-soft);
+}
+
+.demo-badges {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .4rem;
+    margin-top: .6rem;
+}
+
+.badge-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    padding: .2rem .65rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: .78rem;
+    background: #fff;
+}
+
+.badge-chip:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+.badge-chip.no {
+    color: var(--muted);
+}
+
+.badge-chip em {
+    color: var(--critical);
+    font-style: normal;
+}
+
+.section-label {
+    color: var(--muted);
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+}
+
+.person {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--line);
+    background: #fff;
+}
+
+.person.flash {
+    animation: flash 1.6s ease;
+}
+
+.person.working {
+    border-left: 4px solid var(--ok);
+}
+
+.person.break {
+    border-left: 4px solid #f59e0b;
+    background: #fffbeb;
+}
+
+.person.finished {
+    border-left: 4px solid #94a3b8;
+    opacity: .78;
+    background: #f8fafc;
+}
+
+@keyframes flash {
+    from {
+        border-color: var(--ok-line);
+        background: var(--ok-soft);
+    }
+}
+
+.person-name {
+    font-weight: 650;
+}
+
+.person-meta {
+    color: var(--muted);
+}
+
+.avatar {
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    width: 36px;
+    height: 36px;
+    border: 1px solid #c9dafa;
+    border-radius: 50%;
+    color: #1e4fa3;
+    font-size: .78rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #dbe8ff, #eef4ff);
+}
+
+.avatar.sm {
+    width: 26px;
+    height: 26px;
+    margin-right: .3rem;
+    font-size: .65rem;
+    vertical-align: middle;
+}
+
+.empty-slot {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    padding: .75rem .9rem;
+    border: 1.5px dashed var(--critical-line);
+    border-radius: 12px;
+    color: #b42323;
+    font-weight: 500;
+    background: #fffafa;
+}
+
+/* ILU */
+
+.skill-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem;
+}
+
+.skill-chip {
+    padding: .3rem .65rem;
+    border-radius: 8px;
+    color: #1e3a8a;
+    font-size: .82rem;
+    background: var(--accent-soft);
+}
+
+.lvl {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    font-size: .72rem;
+    font-weight: 750;
+}
+
+.lvl-U {
+    color: var(--ilu-U-text);
+    background: var(--ilu-U-bg);
+    box-shadow: inset 0 0 0 1px var(--ilu-U-line);
+}
+
+.lvl-L {
+    color: var(--ilu-L-text);
+    background: var(--ilu-L-bg);
+    box-shadow: inset 0 0 0 1px var(--ilu-L-line);
+}
+
+.lvl-I {
+    color: var(--ilu-I-text);
+    background: var(--ilu-I-bg);
+    box-shadow: inset 0 0 0 1px var(--ilu-I-line);
+}
+
+.lvl-none {
+    color: var(--muted);
+    background: #f1f5f9;
+}
+
+/* =====================================================================
+   Tables and scan log
+   ===================================================================== */
+
+.x-table {
+    --bs-table-bg: transparent;
+    font-size: .88rem;
+    vertical-align: middle;
+}
+
+.x-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    color: var(--muted);
+    font-size: .75rem;
+    font-weight: 650;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    background: #f6f8fc;
+}
+
+.x-table td, .x-table th {
+    padding: .6rem .9rem;
+    border-color: var(--line);
+}
+
+.x-table .num {
+    text-align: center;
+    white-space: nowrap;
+}
+
+.t-time {
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.ev {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    padding: .28rem .6rem;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    font-size: .78rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.ev-ASSIGNED {
+    color: #187a43;
+    border-color: #b8e8c8;
+    background: #eaf8ef;
+}
+
+.ev-REMOVED, .ev-SHIFT_END {
+    color: #475569;
+    border-color: #cbd5e1;
+    background: #f1f5f9;
+}
+
+.ev-BREAK_START {
+    color: #9a6700;
+    border-color: #f6d365;
+    background: #fff8db;
+}
+
+.ev-BREAK_END {
+    color: #1d5fa7;
+    border-color: #b9dafb;
+    background: #eaf4ff;
+}
+
+.ev-SHIFT_START {
+    color: #5b4a99;
+    border-color: #d4caff;
+    background: #f1eeff;
+}
+
+.ev-DUPLICATE {
+    color: #7c5a13;
+    border-color: #f5d58a;
+    background: #fff7e6;
+}
+
+.ev-REFUSED, .ev-ERROR {
+    color: #b42318;
+    border-color: #ffc3c3;
+    background: #fff0f0;
+}
+
+/* =====================================================================
+   Shift report
+   ===================================================================== */
+
+.shift-report-panel {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    height: calc(100vh - 100px);
+}
+
+.report-panel-scroll {
+    flex: 1;
+    min-height: 0;
+}
+
+/*
+  Header and report rows use exactly the same grid columns.
+  Last column is fixed, so badges align vertically.
+*/
+
+.rp-grid {
+    display: grid;
+    align-items: center;
+    gap: .5rem;
+}
+
+.rp-head {
+    top: 70px;
+    z-index: 20;
+    color: var(--muted);
+    border-bottom: 1px solid var(--line);
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    line-height: 1.25;
+    text-transform: uppercase;
+    background: #f6f8fc;
+    align-items: start;
+}
+
+/* Keep STATUS aligned at the top with the other headings */
+
+.rp-head .rp-status {
+    align-self: start;
+}
+
+/* One clean group. No rounded outer box around all activities. */
+
+.rp-section {
+    border: 0;
+}
+
+/*
+  Supports both possible current HTML structures:
+  - new: .rp-summary
+  - old: .rp-sec-head + .rp-sec-meta
+*/
+
+.rp-summary, .rp-sec-head {
+    align-items: center;
+    gap: .7rem;
+    border: 1px solid var(--line);
+    border-left: 5px solid var(--sec-color, #2563eb);
+    border-radius: 11px;
+    background: #f8fafc;
+}
+
+/* New structure */
+
+.rp-summary {
+    display: block;
+    margin: 0 .25rem .22rem;
+}
+
+/* New structure: top line */
+
+.rp-summary-top {
+    justify-content: space-between;
+    gap: .55rem;
+}
+
+/* Old structure: section heading */
+
+.rp-sec-head {
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.rp-sec-name {
+    font-weight: 700;
+}
+
+/* New summary progress bar */
+
+.rp-summary .rp-bar {
+    overflow: hidden;
+    border-radius: 999px;
+    background: #e7ecf3;
+}
+
+.rp-summary .bar-fill, .rp-bar .bar-fill {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+}
+
+/* New summary lower line */
+
+.rp-summary-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .7rem;
+    color: var(--muted);
+    font-size: .7rem;
+}
+
+/*
+  Old summary meta remains simple text.
+  It must not become a separate border/card.
+*/
+
+.rp-sec-meta, .rp-section-meta {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    color: var(--muted);
+    font-size: .74rem;
+    background: transparent;
+}
+
+/*
+  The old progress bar is kept visually within the heading area.
+  It gets spacing so it never touches the next activity row.
+*/
+
+.rp-sec-head + .rp-bar {
+    height: 4px;
+    margin: -.1rem .9rem .5rem;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #e7ecf3;
+}
+
+/* Plain report positions */
+
+.rp-line {
+    border-top: 1px solid #edf1f6;
+    border-right: 0;
+    border-bottom: 0;
+    border-left: 0;
+    font-size: .82rem;
+    background: #fff;
+}
+
+/* hovered line takes a tint of its main area's colour (--sec-color on .rp-section) */
+
+.rp-line:hover {
+    background: color-mix(in srgb, var(--sec-color, var(--accent)) 14%, #fff);
+}
+
+/* name + tasks of a report line = link to the same pop-up as its pictogram on the layout */
+
+.rp-link {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    text-align: left;
+}
+
+/* plain underline like in Word: each part in its own text colour, default thickness and position */
+
+.rp-link b, .rp-link .muted {
+    text-decoration: underline;
+    text-decoration-skip-ink: none;   /* continuous line under p, g, y – like Word */
+}
+
+.rp-link:hover {
+    color: var(--sec-color, var(--accent));
+}
+
+/* tasks in brackets in the same (black) colour as the name */
+
+.rp-link .muted, .rp-link:hover .muted {
+    color: inherit;
+}
+
+.rp-link:focus-visible {
+    outline: 2px solid var(--sec-color, var(--accent));
+    outline-offset: 2px;
+    border-radius: 3px;
+}
+
+.rp-line:first-of-type {
+    margin-top: .28rem;
+}
+
+.rp-area {
+    line-height: 1.3;
+}
+
+.rp-emp {
+    line-height: 1.35;
+}
+
+.rp-kpis {
+    color: var(--muted);
+    font-size: .72rem;
+}
+
+.rp-line .remark {
+    color: #8a5a00;
+    font-size: .74rem;
+}
+
+.rp-swatch {
+    display: none;
+}
+
+/* =====================================================================
+   ILU modal
+   ===================================================================== */
+
+.ilu-toolbar {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    margin-bottom: .7rem;
+}
+
+.ilu-toolbar input {
+    max-width: 260px;
+    margin-left: auto;
+}
+
+.ilu-key {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .4rem;
+    margin-bottom: .8rem;
+}
+
+.ilu-card {
+    overflow: hidden;
+    margin-bottom: .45rem;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #fff;
+}
+
+.ilu-card.open {
+    border-color: #93b4f0;
+    box-shadow: var(--shadow);
+}
+
+.ilu-card-head {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    width: 100%;
+    padding: .6rem .85rem;
+    border: 0;
+    color: var(--text);
+    background: none;
+}
+
+.ilu-card-head:hover {
+    background: #f8fafd;
+}
+
+.ilu-code {
+    min-width: 2.2rem;
+    color: var(--accent);
+    font-weight: 750;
+    text-align: left;
+}
+
+.ilu-summary {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    min-width: 170px;
+}
+
+.lvl-bar {
+    display: flex;
+    width: 160px;
+    height: 7px;
+    overflow: hidden;
+    border-radius: 4px;
+    background: #edf1f7;
+}
+
+.lvl-bar .seg-U {
+    background: var(--ilu-U-bar);
+}
+
+.lvl-bar .seg-L {
+    background: var(--ilu-L-bar);
+}
+
+.lvl-bar .seg-I {
+    background: var(--ilu-I-bar);
+}
+
+.ilu-card-body {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: .8rem;
+    padding: .3rem .9rem .9rem;
+}
+
+.ilu-card-body.names {
+    display: block;
+}
+
+.ilu-group-title {
+    margin-bottom: .3rem;
+    color: var(--muted);
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+
+.ilu-skill-line {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .12rem 0;
+    font-size: .84rem;
+}
+
+.ilu-names {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .3rem;
+    padding: .3rem 0;
+}
+
+.name-chip {
+    padding: .05rem .55rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: .78rem;
+}
+
+.pager {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .75rem;
+    padding: .6rem 0 .1rem;
+    color: var(--muted);
+    font-size: .85rem;
+}
+
+/* =====================================================================
+   Analytics
+   ===================================================================== */
+
+.analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.analytics-card {
+    padding: 1rem;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: #fff;
+}
+
+.analytics-card-wide {
+    margin-top: 1rem;
+}
+
+.analytics-card h3 {
+    margin: 0 0 .85rem;
+    font-size: 1rem;
+    font-weight: 750;
+}
+
+.chart-wrap {
+    position: relative;
+    height: 280px;
+}
+
+.chart-wrap-bar {
+    height: 330px;
+}
+
+.chart-wrap-work {
+    height: 360px;
+}
+
+.attention-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    width: 100%;
+    margin-bottom: .55rem;
+    padding: .75rem .85rem;
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--critical);
+    border-radius: 10px;
+    text-align: left;
+    background: #fff;
+}
+
+.attention-row.st-warning {
+    border-left-color: var(--warning);
+}
+
+.attention-row:hover {
+    border-color: var(--accent);
+    box-shadow: var(--shadow);
+}
+
+.attention-name {
+    font-weight: 700;
+}
+
+.attention-meta {
+    margin-top: .15rem;
+    color: var(--muted);
+    font-size: .82rem;
+}
+
+.work-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: .7rem;
+    margin-bottom: 1rem;
+}
+
+.work-kpi {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: .45rem;
+    min-height: 92px;
+    padding: .75rem;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #fbfcfe;
+}
+
+.work-kpi-label {
+    color: var(--muted);
+    font-size: .73rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+
+.work-kpi strong {
+    font-size: 1.25rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.work-kpi.working {
+    border-color: var(--ok-line);
+    background: var(--ok-soft);
+}
+
+.work-kpi.break {
+    border-color: #f6d365;
+    background: #fff8db;
+}
+
+.work-kpi.finished {
+    border-color: #cbd5e1;
+    background: #f1f5f9;
+}
+
+.work-status-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: .23rem .55rem;
+    border: 1px solid;
+    border-radius: 999px;
+    font-size: .75rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.work-status-pill.working {
+    color: #187a43;
+    border-color: #b8e8c8;
+    background: #eaf8ef;
+}
+
+.work-status-pill.break {
+    color: #9a6700;
+    border-color: #f6d365;
+    background: #fff8db;
+}
+
+.work-status-pill.finished {
+    color: #475569;
+    border-color: #cbd5e1;
+    background: #f1f5f9;
+}
+
+.work-status-pill.not-started {
+    color: #64748b;
+    border-color: #dbe3ee;
+    background: #f8fafc;
+}
+
+.work-time-table td, .work-time-table th {
+    vertical-align: middle;
+}
+
+/* =====================================================================
+   Toast
+   ===================================================================== */
+
+.x-toast {
+    border: 0;
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    font-weight: 600;
+}
+
+.x-toast.ok {
+    color: #fff;
+    background: #14532d;
+}
+
+.x-toast.info {
+    color: #fff;
+    background: #1e3a8a;
+}
+
+.x-toast .btn-close {
+    filter: invert(1);
+}
+
+/* =====================================================================
+   Print
+   ===================================================================== */
+
+@media print {
+    .topbar, .layout, .x-modal-head .btn-soft, .round-btn {
+        display: none !important;
+    }
+
+    .modal {
+        position: static;
+        display: block !important;
+    }
+
+    .modal-dialog {
+        max-width: 100%;
+        margin: 0;
+    }
+}
+
+/* =====================================================================
+   Responsive
+   ===================================================================== */
+
+@media (max-width: 900px) {
+    .work-kpi-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 700px) {
+    .analytics-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .chart-wrap, .chart-wrap-bar {
+        height: 250px;
+    }
+
+    .rp-grid {
+        grid-template-columns: minmax(160px, 2fr) 70px 78px minmax(140px, 2fr) 132px;
+    }
+}
+
+@media (max-width: 560px) {
+    .work-kpi-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .chart-wrap-work {
+        height: 280px;
+    }
+
+    .rp-summary-top, .rp-summary-bottom {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .rp-summary-top .pill {
+        margin-left: 0;
+    }
+}
+
+/* Frozen Shift report header: all headings aligned left */
+
+.rp-head > * {
+    justify-self: start;
+}
+
+/* Align section-summary badge with row status badges */
+
+.rp-summary-top .pill {
+    margin-left: auto;
+}
+
+/* =========================================================
+   Shift report: all status badges identical size and position
+   ========================================================= */
+
+.rp-sec-head, .rp-summary-top {
+    display: flex;
+}
+
+/* =========================================================
+   Align main section status badge with inner row badges
+   ========================================================= */
+
+/* Same right margin for the section summary and indented rows */
+
+.rp-summary {
+    margin-right: .35rem !important;
+}
+
+/* Row badges use the same right alignment */
+
+.rp-status {
+    align-items: center;
+}
+
+/* =========================================================
+   WAREHOUSE MAP — FLOATING SECTION LABELS
+   Add at the very bottom of style.css
+   ========================================================= */
+
+.warehouse-map-label {
+    position: absolute;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 155px;
+    max-width: 230px;
+    padding: 10px 16px;
+    color: #25364f;
+    background: rgba(255, 255, 255, 0.97);
+    border-radius: 999px;
+    box-shadow: 0 5px 18px rgba(31, 53, 85, 0.18);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.25;
+    pointer-events: none;
+    white-space: normal;
+}
+
+/* Colored vertical accent on the left */
+
+.warehouse-map-label::before {
+    content: "";
+    width: 4px;
+    align-self: stretch;
+    min-height: 22px;
+    margin-left: -16px;
+    border-radius: 999px 0 0 999px;
+    background: var(--map-label-color, #2563eb);
+}
+
+/* Colored status dot */
+
+.warehouse-map-label .map-label-dot {
+    width: 10px;
+    height: 10px;
+    flex: 0 0 10px;
+    border-radius: 50%;
+    background: var(--map-label-color, #2563eb);
+}
+
+/* Optional connector line toward the warehouse area */
+
+.warehouse-map-label .map-label-line {
+    position: absolute;
+    top: 50%;
+    width: 34px;
+    height: 2px;
+    background: var(--map-label-color, #2563eb);
+    transform: translateY(-50%);
+}
+
+/* Label positioned to the RIGHT of a warehouse area */
+
+.warehouse-map-label.label-right .map-label-line {
+    right: 100%;
+}
+
+/* Label positioned to the LEFT of a warehouse area */
+
+.warehouse-map-label.label-left .map-label-line {
+    left: 100%;
+}
+
+/* Connector endpoint */
+
+.warehouse-map-label .map-label-line::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    border: 2px solid var(--map-label-color, #2563eb);
+    border-radius: 50%;
+    background: #fff;
+    transform: translateY(-50%);
+}
+
+.warehouse-map-label.label-right .map-label-line::after {
+    left: -5px;
+}
+
+.warehouse-map-label.label-left .map-label-line::after {
+    right: -5px;
+}
+
+/* Color variants */
+
+.warehouse-map-label.is-green {
+    --map-label-color: #86d816;
+}
+
+.warehouse-map-label.is-pink {
+    --map-label-color: #ec1e73;
+}
+
+.warehouse-map-label.is-red {
+    --map-label-color: #f12a24;
+}
+
+.warehouse-map-label.is-blue {
+    --map-label-color: #1676f3;
+}
+
+.warehouse-map-label.is-purple {
+    --map-label-color: #7334e8;
+}
+
+.warehouse-map-label.is-orange {
+    --map-label-color: #f3a400;
+}
+
+/* Keep labels readable on smaller screens */
+
+@media (max-width: 900px) {
+    .warehouse-map-label {
+        min-width: 130px;
+        max-width: 185px;
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+
+    .warehouse-map-label::before {
+        margin-left: -12px;
+    }
+
+    .warehouse-map-label .map-label-line {
+        width: 22px;
+    }
+}
+
+/* =========================================================
+   3D WAREHOUSE — AREA CALLOUT LABELS
+   ========================================================= */
+
+#sceneLabels {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+/* Main white pill label */
+
+.map-label {
+    position: absolute;
+    display: inline-flex;
+    align-items: center;
+    border: 0;
+    border-left: 4px solid var(--area-color, #2563eb);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.98);
+    color: #24344d;
+    font: inherit;
+    font-weight: 700;
+    text-align: left;
+    pointer-events: auto;
+}
+
+/* Colored circular marker inside every label */
+
+.map-label::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    flex: 0 0 10px;
+    border-radius: 50%;
+    background: var(--area-color, #2563eb);
+}
+
+/* Different status colours for the marker */
+
+.map-label.st-ok::before {
+    background: #16a34a;
+}
+
+.map-label.st-warning::before {
+    background: #e0a100;
+}
+
+.map-label.st-critical::before {
+    background: #dc2626;
+}
+
+/* Slight feedback when selecting / hovering */
+
+.map-label:hover, .map-label.hover, .map-label.selected {
+    box-shadow: 0 8px 22px rgba(30, 52, 86, 0.28);
+    transform-origin: center;
+}
+
+/* Better size on smaller dashboard panels */
+
+@media (max-width: 900px) {
+    .map-label {
+        min-width: 130px;
+        max-width: 180px;
+        min-height: 32px;
+        padding: 7px 12px 7px 10px;
+        font-size: 12px;
+    }
+
+    .map-label::before {
+        width: 8px;
+        height: 8px;
+        flex-basis: 8px;
+    }
+}
+
+.leaders {
+    position: absolute;
+    inset: 0;
+    overflow: visible;
+    z-index: 5;
+}
+
+/* Keep dotted callout lines clearly visible */
+
+.leader-dot {
+    stroke-width: 3px;
+}
+
+/* Lines behind pills; pills remain clickable and above them */
+
+.map-label {
+    z-index: 10;
+}
+
+/* Final map-label override — keep labels compact and visible */
+
+.map-label {
+    min-width: 0;
+}
+
+.leader {
+    stroke-width: 2px;
+    stroke-dasharray: 5px 5px;
+    stroke-linecap: round;
+}
+
+/* status colour of the progress bars (Shift report + overview) */
+
+.bar-fill {
+    transition: width .4s;
+}
+
+.bar-fill.st-ok {
+    background: var(--ok);
+}
+
+.bar-fill.st-warning {
+    background: var(--warning);
+}
+
+.bar-fill.st-critical {
+    background: var(--critical);
+}
+
+/* =====================================================================
+   FINAL alignment of the Shift report: header, lines and total use the SAME
+   columns and the SAME inner left/right edge (section edge = 5px + 1px border).
+   ===================================================================== */
+
+#reportBody .rp-grid {
+    grid-template-columns: minmax(170px, 2.2fr) 92px 92px minmax(150px, 2.4fr) 132px !important;
+    column-gap: .6rem !important;
+}
+
+#reportBody .rp-head, #reportBody .rp-total {
+    padding: .35rem calc(.7rem + 1px) .35rem calc(.7rem + 6px) !important;
+}
+
+#reportBody .rp-num {
+    justify-self: stretch;
+}
+
+#reportBody .rp-status {
+    justify-self: stretch;
+    display: flex;
+}
+
+/* area pop-up: page behind it stays usable (scroll the report, click the map) */
+
+body.area-pop-open {
+    overflow: auto !important;
+    padding-right: 0 !important;
+}
+
+#areaModal {
+    pointer-events: none;
+}
+
+#areaModal .modal-dialog {
+    pointer-events: auto;
+    transform: none !important;
+    max-width: calc(100vw - 4rem) !important;
+}
+
+#areaModal .x-modal {
+    box-shadow: 0 24px 70px rgba(15, 35, 65, .32), 0 0 0 1px rgba(15, 35, 65, .08);
+}
+
+/* Total per Shift – accented last row */
+
+#reportBody .rp-total {
+    background: linear-gradient(90deg, #1e3a8a, #2563eb) !important;
+    color: #fff !important;
+    border-radius: 10px !important;
+    font-size: .95rem !important;
+    font-weight: 800 !important;
+    box-shadow: 0 6px 16px rgba(37, 99, 235, .25);
+}
+
+#reportBody .rp-total .rp-num {
+    font-size: 1.1rem;
+}
+
+/* people icon at the start of the pop-up header (first level), coloured by status */
+
+.round-btn.people-badge {
+    border-width: 2px;
+}
+
+.round-btn.people-badge.st-ok {
+    color: var(--ok);
+    border-color: var(--ok-line);
+    background: var(--ok-soft);
+}
+
+.round-btn.people-badge.st-warning {
+    color: #b07d00;
+    border-color: var(--warning-line);
+    background: var(--warning-soft);
+}
+
+.round-btn.people-badge.st-critical {
+    color: var(--critical);
+    border-color: var(--critical-line);
+    background: var(--critical-soft);
+}
+
+.round-btn.people-badge:hover {
+    filter: none;
+}
+
+/* =====================================================================
+   v9 – smaller floating map labels
+   ===================================================================== */
+
+#sceneLabels .map-label {
+    box-shadow: 0 3px 10px rgba(30, 52, 86, .16) !important;
+}
+
+#sceneLabels .map-label::before {
+    min-width: 6px;
+}
+
+/* =====================================================================
+   v9 – Shift report: all column titles (and their values) aligned the same way – left
+   ===================================================================== */
+
+#reportBody .rp-head > *,
+#reportBody .rp-num,
+#reportBody .rp-status,
+#reportBody .rp-head .rp-status {
+    text-align: left !important;
+    justify-content: flex-start !important;
+}
+
+/* v9b – pop-up tall enough for the longest list (5 lines) without slicing; slightly more compact items */
+
+#areaModal .list {
+    gap: .45rem !important;
+}
+
+#areaModal .list .item {
+    padding-top: .55rem !important;
+    padding-bottom: .55rem !important;
+    min-height: 0 !important;
+}
+
+/* “Support & back-up” in the top-left corner of the warehouse map (empty, left of the trucks);
+   top-right is taken by the Sorting / Traymaster labels, bottom corners by the hall itself */
+
+.scene-tools {
+    top: .75rem;
+    bottom: .75rem;
+}
+
+#offMap {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* Keep Reset view in the bottom-right corner */
+
+#btnResetView {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    display: none !important;
+}
+
+/* =========================================================
+   ALL MAP PILLS — OUTER SHADOW ONLY ON HOVER
+   Applies to:
+   - Support & back-up
+   - Sorting / Traymaster
+   - Incom. / Outg. WHS
+   - Main WHS - Picking
+   - Main WHS - Production Material Transport
+   ========================================================= */
+
+/* Normal state: no coloured outline */
+
+#offMap .map-chip, #sceneLabels .map-label {
+    border-top-color: transparent !important;
+    border-right-color: transparent !important;
+    border-bottom-color: transparent !important;
+    transition: box-shadow .18s ease !important;
+}
+
+/* Hover state: OUTER shadow only */
+
+#offMap .map-chip:hover,
+#sceneLabels .map-label:hover,
+#sceneLabels .map-label.hover,
+#sceneLabels .map-label.selected {
+    outline: none !important;
+    /* Removes the coloured hover ring */
+    border-top-color: transparent !important;
+    border-right-color: transparent !important;
+    border-bottom-color: transparent !important;
+    /* Outer shadow only — no inset */
+    box-shadow: 0 10px 20px rgba(15, 35, 65, .20), 0 20px 36px rgba(15, 35, 65, .16) !important;
+}
+
+/* Remove browser focus outline after clicking */
+
+#offMap .map-chip:focus,
+#offMap .map-chip:focus-visible,
+#sceneLabels .map-label:focus,
+#sceneLabels .map-label:focus-visible {
+    outline: none !important;
+}
+
+/* =========================================================
+   TASK POPUP — assigned people first, scan below
+   ========================================================= */
+
+/* First title: Assigned to task */
+
+.task-section-title {
+    margin: 0 0 .5rem;
+    font-size: .74rem;
+    font-weight: 750;
+}
+
+/* Default scan area */
+
+.scan-card {
+    background: linear-gradient(135deg, #eef4ff, #f8fbff);
+    transition: background .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+
+/* Successful employee assignment = green scan section */
+
+.scan-card.is-ok {
+    border-color: var(--ok-line);
+    background: linear-gradient(135deg, #e7f6ec, #f8fffa);
+    box-shadow: 0 8px 20px rgba(22, 163, 74, .10);
+}
+
+.scan-card.is-ok .scan-icon {
+    background: linear-gradient(135deg, #22a85a, #15803d);
+    box-shadow: 0 8px 18px rgba(22, 163, 74, .26);
+}
+
+/* Unqualified / refused employee assignment = red scan section */
+
+.scan-card.is-bad {
+    border-color: var(--critical-line);
+    background: linear-gradient(135deg, #fdecec, #fff9f9);
+    box-shadow: 0 8px 20px rgba(220, 38, 38, .10);
+}
+
+.scan-card.is-bad .scan-icon {
+    background: linear-gradient(135deg, #ef4444, #b91c1c);
+    box-shadow: 0 8px 18px rgba(220, 38, 38, .25);
+}
+
+/* The assigned list should be directly below its heading */
+
+#taskPeople .empty-slot {
+    margin-bottom: 0;
+}
+
+/* Keep feedback close to the scan card */
+
+.scan-card + .scan-feedback {
+    margin-top: .6rem;
+}
+
+/* Assigned employee controls: labels above ILU and Remove */
+
+.person-action {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: .22rem;
+    flex: none;
+}
+
+.person-action-label {
+    min-height: 12px;
+    color: var(--muted);
+    font-size: .58rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: .02em;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* Keep the ILU U/L/I badge aligned with the action buttons */
+
+.person-action .lvl {
+    width: 32px;
+    height: 32px;
+}
+
+/* =========================================================
+   FIX: ILU qualification / Remove header alignment
+   ========================================================= */
+
+/* Header line */
+
+.assigned-heading {
+    display: flex;
+    align-items: flex-end;
+    width: 100%;
+    padding: 0 .7rem 0 0;
+}
+
+/* “ASSIGNED TO TASK (1)” stays on the left */
+
+.assigned-heading .assigned-title {
+    margin: 0;
+}
+
+/* Labels on the right: enough physical space for their text */
+
+.assigned-action-headings {
+    display: grid !important;
+    margin-left: auto;
+    align-items: end;
+    color: var(--muted);
+    font-size: .62rem;
+    font-weight: 700;
+    line-height: 1.1;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* Employee row controls use the EXACT same columns */
+
+.person-actions {
+    display: grid !important;
+    align-items: center;
+    justify-items: center;
+    flex: 0 0 auto;
+}
+
+/* ILU badge centered under “ILU qualification” */
+
+.person-ilu {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Remove button centered under “Remove” */
+
+.person-actions .round-btn.danger {
+    justify-self: center;
+}
+
+/* =========================================================
+   FIXED SMALLER TASK POPUP — OVER TRUCK / DOCK AREA
+   ========================================================= */
+
+#areaModal .modal-dialog {
+    position: fixed !important;
+    top: 8.5rem !important;
+    left: 2rem !important;
+    margin: 0 !important;
+}
+
+/* Header is no longer draggable */
+
+#areaModalHead {
+    cursor: default !important;
+}
+
+/* =====================================================================
+   Shift report on one screen – compact rows, no scrolling
+   (app.js fitReport() shrinks it a little more on small screens)
+   ===================================================================== */
+
+.side {
+    height: calc(100vh - 100px);   /* same height as the map – the column must not grow with the report */
+}
+
+.shift-report-panel {
+    overflow: hidden;
+}
+
+.shift-report-panel .card-head {
+    padding: .7rem 1.15rem .2rem;
+}
+
+.report-panel-scroll {
+    overflow: hidden !important;
+}
+
+#reportBody {
+    padding: .1rem .75rem .5rem;
+    transform-origin: top left;
+}
+
+#reportBody .rp-head {
+    position: static;   /* report no longer scrolls, so the column titles don't need to stick */
+    padding-top: .2rem !important;
+    padding-bottom: .2rem !important;
+}
+
+#reportBody .rp-section {
+    margin-top: .4rem;
+}
+
+#reportBody .rp-summary {
+    margin-bottom: .1rem;
+    padding: .25rem .65rem .2rem;
+}
+
+#reportBody .rp-section .rp-line {
+    min-height: 0;
+    padding: .14rem .7rem !important;
+}
+
+#reportBody .rp-line:first-of-type {
+    margin-top: .1rem;
+}
+
+#reportBody .rp-total {
+    margin-top: .4rem !important;
+}
+
+/* Shift report ↔ layout link: line / group highlighted while its pictogram or area is hovered on the map */
+
+#reportBody .rp-line.rp-linked,
+#reportBody .rp-section.rp-linked .rp-line {
+    background: color-mix(in srgb, var(--sec-color, var(--accent)) 14%, #fff);
+}
+
+#reportBody .rp-section.rp-linked .rp-summary {
+    background: color-mix(in srgb, var(--sec-color, var(--accent)) 16%, #fff);
+}
+
+/* =====================================================================
+   Task pop-up – compact: one line per assigned person, small scan box
+   ===================================================================== */
+
+#areaModal .assigned-heading {
+    margin: 0 0 .35rem;   /* directly below the pop-up header (only the body padding above) */
+}
+
+#areaModal #taskPeople {
+    max-height: 190px;   /* about 5 people; more → scroll inside the list */
+    overflow-y: auto;
+}
+
+#areaModal .person {
+    gap: .55rem;
+    margin-bottom: .3rem;
+    padding: .25rem .55rem;
+    border-radius: 9px;
+}
+
+#areaModal .person .avatar {
+    width: 26px;
+    height: 26px;
+    font-size: .62rem;
+}
+
+#areaModal .person-name {
+    font-size: .86rem;
+}
+
+#areaModal .person-actions .round-btn.danger {
+    width: 26px;
+    height: 26px;
+    font-size: .75rem;
+}
+
+#areaModal #taskPeople .empty-slot {
+    padding: .4rem .7rem;
+}
+
+#areaModal .assign-more-title {
+    margin-top: .8rem;
+}
+
+#areaModal .scan-card {
+    gap: .6rem;
+    padding: .35rem .6rem;
+    border-radius: 10px;
+}
+
+#areaModal .scan-card .scan-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-shadow: none;
+}
+
+#areaModal .scan-input {
+    font-size: .95rem;
+}
+
+/* name + team + badge always on ONE line (cut with … if a name is very long) */
+
+#areaModal .person > .flex-grow-1 {
+    text-overflow: ellipsis;
+}
+
+/* narrower ILU / Remove columns (headings and buttons keep the same columns) */
+
+#areaModal .assigned-action-headings, #areaModal .person-actions {
+    grid-template-columns: 80px 40px !important;
+    column-gap: 8px !important;
+}
+
+#areaModal .person-ilu {
+    width: 80px;
+}
+
+/* scanned person is already on another position → question with Move here / Cancel */
+
+.scan-feedback.warn {
+    color: #8a5a00;
+    background: var(--warning-soft);
+    font-size: .85rem;
+}
+
+.scan-feedback .fb-btn {
+    flex: none;
+    padding: .2rem .65rem;
+    border: 1px solid #b07d00;
+    border-radius: 8px;
+    color: #fff;
+    font-size: .8rem;
+    background: #b07d00;
+}
+
+.scan-feedback .fb-btn.ghost {
+    color: #8a5a00;
+    background: transparent;
+}
+
+/* map labels smaller (they are also pushed apart in scene3d.js placeLabels when they would overlap) */
+
+#sceneLabels .map-label {
+    gap: 5px !important;
+    border-left-width: 3px !important;
+}
+
+#sceneLabels .map-label::before {
+    width: 6px !important;
+    height: 6px !important;
+    flex-basis: 6px !important;
+}
+
+#offMap .map-chip {
+    min-height: 22px !important;
+    padding: 3px 9px 3px 7px !important;
+    gap: 5px !important;
+    font-size: 11px !important;
+    line-height: 1.15 !important;
+}
+
+#offMap .map-chip::before {
+    width: 6px !important;
+    height: 6px !important;
+    flex-basis: 6px !important;
+}
+
+/* pictogram tooltip: same size as the map labels, wraps long names, always above the labels */
+
+.worker-tip {
+    z-index: 30 !important;
+    max-width: 200px;
+    padding: 3px 8px !important;
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+}
+
+.worker-tip .tip-title {
+    align-items: flex-start !important;
+    gap: 5px !important;
+}
+
+.worker-tip .tip-title .dot {
+    width: 6px !important;
+    height: 6px !important;
+    flex: 0 0 6px !important;
+    margin-top: 4px;
+}
+
+/* Repack / Kitting – label without a line right of the lower hall, narrow so it fits next to the wall */
+
+#sceneLabels .map-label::before {
+    flex-shrink: 0 !important;
+}
+
+/* group header in the Shift report – lower (name, bar and "x of y positions staffed" closer together) */
+
+#reportBody .rp-summary {
+    padding-top: 3px !important;
+    padding-bottom: 2px !important;
+}
+
+#reportBody .rp-summary-top {
+    line-height: 19px !important;
+}
+
+#reportBody .rp-summary-top .pill {
+    line-height: 14px !important;
+}
+
+#reportBody .rp-bar {
+    height: 4px !important;
+    margin: 1px 0 1px !important;
+}
+
+#reportBody .rp-summary-bottom {
+    line-height: 13px !important;
+}
+
+/* =====================================================================
+   Shift report – status tags: flat, same width, soft tint, dot with halo
+   ===================================================================== */
+
+#reportBody .pill {
+    justify-content: flex-start !important;
+    gap: 6px !important;
+    width: 112px !important;
+    min-width: 0 !important;
+    height: 20px !important;
+    padding: 0 8px !important;
+    border: 0 !important;
+    border-radius: 6px !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    line-height: 20px !important;
+    letter-spacing: .01em;
+    box-shadow: inset 0 0 0 1px var(--tag-line) !important;
+    color: var(--tag-ink) !important;
+    background: var(--tag-bg) !important;
+    max-width: 112px !important;
+}
+
+#reportBody .pill .dot {
+    width: 6px !important;
+    height: 6px !important;
+    flex: 0 0 6px !important;
+    box-shadow: 0 0 0 2.5px var(--tag-halo) !important;
+}
+
+#reportBody .pill.st-ok {
+    --tag-ink: #166534;
+    --tag-bg: #effaf3;
+    --tag-line: #c9ecd5;
+    --tag-dot: #16a34a;
+    --tag-halo: #c9ecd5;
+}
+
+#reportBody .pill.st-warning {
+    --tag-ink: #92400e;
+    --tag-bg: #fff8e6;
+    --tag-line: #f6dfa4;
+    --tag-dot: #e0a100;
+    --tag-halo: #f6dfa4;
+}
+
+#reportBody .pill.st-critical {
+    --tag-ink: #b91c1c;
+    --tag-bg: #fef2f2;
+    --tag-line: #fbd0d0;
+    --tag-dot: #dc2626;
+    --tag-halo: #fbd0d0;
+}
+
+#reportBody .pill {
+    flex: 0 0 112px !important;
+}
+
+/* line tags at the right end of the status column → same right edge as the group header tags */
+
+#reportBody .rp-status {
+    justify-content: flex-end !important;
+}
+
+#reportBody .rp-summary-top .pill {
+    margin-right: -5px !important;   /* same right edge as the line tags below */
+}
+
+/* Support & back-up – small one-line label right of the hall, above Incom. / Outg. WHS */
+
+#offMap:empty {
+    display: none;
+}
+
+/* "STATUS" column title starts where the status tags start (tags are right-aligned, 112 px wide) */
+
+#reportBody .rp-head .rp-status, .rp-head .rp-status {
+    display: block !important;
+    padding-left: calc(100% - 112px) !important;
+}
+
+/* task pop-up opens at the top-left corner of the map (over the trucks), not vertically centred */
+
+#areaModal .modal-dialog {
+    min-height: 0 !important;
+    height: auto !important;
+    align-items: flex-start !important;
+}
+
+#areaModal .modal-content {
+    max-height: calc(100vh - 11rem) !important;
+}
+
+/* narrower task pop-up */
+
+#areaModal .modal-dialog {
+    width: 380px !important;
+}
+
+/* narrow pop-up: smaller group title and status tags so the line names get the room */
+
+#areaModal .view-head h2 {
+    line-height: 1.25 !important;
+}
+
+#areaModal .view-head .muted {
+    font-size: .8rem !important;
+}
+
+#areaModal .pill {
+    min-width: 0 !important;
+    flex: none !important;
+    padding: 1px 8px !important;
+    font-size: 11px !important;
+    gap: 5px !important;
+}
+
+#areaModal .pill .dot {
+    width: 6px !important;
+    height: 6px !important;
+    flex: 0 0 6px !important;
+}
+
+#areaModal .item {
+    grid-template-columns: 5px minmax(0, 1fr) auto auto 14px !important;
+    column-gap: 10px !important;
+}
+
+#areaModal .item-title {
+    font-size: .92rem !important;
+}
+
+/* pop-up header and the position name in it – smaller, takes less room */
+
+#areaModalHead {
+    padding: 8px 12px !important;
+    gap: 8px !important;
+}
+
+#areaModalHead .round-btn {
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    padding: 0 !important;
+    font-size: 13px !important;
+}
+
+#areaModalHead .round-btn i {
+    line-height: 1 !important;
+}
+
+#areaModalHead .crumbs {
+    font-size: 14px !important;
+    line-height: 1.25 !important;
+}
+
+/* group view: title block above the lines */
+
+#areaModal .view-head {
+    margin-bottom: .5rem !important;
+}
+
+#areaModal .view-head .eyebrow {
+    font-size: 10px !important;
+}
+
+#areaModal .view-head h2 {
+    font-size: .95rem !important;
+    margin: 1px 0 !important;
+}
+
+#areaModal .modal-body {
+    padding: 12px 14px 14px !important;
+}
+
+/* assigned person row */
+
+#areaModal .person {
+    font-size: 14px !important;
+}
+
+/* assigned person: team and ID on a second line under the name (no longer cut off) */
+
+#areaModal .person > .flex-grow-1 {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    gap: 0 !important;
+    min-width: 0 !important;
+}
+
+#areaModal .person .person-name {
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    line-height: 1.2 !important;
+}
+
+#areaModal .person .person-meta {
+    margin: 0 !important;
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+}
+
+/* group (overall) status = solid tag with white text; line statuses below stay soft tinted */
+
+#reportBody .rp-summary .pill, #areaModal .view-head .pill {
+    color: #fff !important;
+    background: var(--tag-dot) !important;
+    box-shadow: 0 1px 3px color-mix(in srgb, var(--tag-dot) 45%, transparent) !important;
+    font-weight: 700 !important;
+}
+
+#reportBody .rp-summary .pill .dot, #areaModal .view-head .pill .dot {
+    background: #fff !important;
+    box-shadow: 0 0 0 2.5px rgba(255, 255, 255, .35) !important;
+}
+
+#areaModal .pill.st-ok {
+    --tag-dot: #16a34a;
+}
+
+#areaModal .pill.st-warning {
+    --tag-dot: #d99a00;
+}
+
+#areaModal .pill.st-critical {
+    --tag-dot: #dc2626;
+}
+
+/* group status sits on the progress bar like a tab: flat bottom touching the bar, same right end */
+
+#reportBody .rp-summary-top {
+    align-items: flex-end !important;
+}
+
+#reportBody .rp-summary .pill {
+    align-self: flex-end !important;
+    border-radius: 6px 6px 0 0 !important;
+    transform: translateY(1px);
+    box-shadow: none !important;
+}
+
+#reportBody .rp-summary .rp-bar {
+    margin-right: -5px !important;   /* bar ends under the right edge of the status tab */
+    border-top-right-radius: 0 !important;
+}
+
+#reportBody .rp-summary .rp-bar {
+    width: calc(100% + 5px) !important;
+}
+
+/* all map labels: same text size and one line, so none looks bigger than the others
+   (only the long Production Material Transport name breaks into two lines – no room left of the hall) */
+
+#sceneLabels .map-label, #sceneLabels .map-label[data-area] {
+    font-size: 11px !important;
+    line-height: 1.15 !important;
+    min-height: 22px !important;
+    padding: 3px 9px 3px 7px !important;
+    max-width: none !important;
+    white-space: nowrap !important;
+}
+
+#sceneLabels .map-label[data-area="TRANS"] {
+    white-space: normal !important;
+    max-width: 135px !important;
+}
+
+/* =====================================================================
+   v10 – refined 3D layout (white pills with status dot + count, grey leaders,
+   « » door markers, zone summary under the map)
+   ===================================================================== */
+
+.map-head h2 {
+    font-size: 1.25rem !important;
+}
+
+/* lighter, softer blurred warehouse background */
+.scene-wrap {
+    margin: 0 1.15rem !important;
+    border-radius: 14px !important;
+}
+
+.scene-wrap::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(150, 175, 190, .28), rgba(70, 100, 120, .18));
+    pointer-events: none;
+}
+
+#sceneLabels .map-label, #sceneLabels .map-label[data-area] {
+    gap: 7px !important;
+    min-height: 28px !important;
+    padding: 5px 13px 5px 11px !important;
+    border: 1px solid rgba(15, 35, 65, .08) !important;
+    border-radius: 999px !important;
+    color: #13233a !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    background: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(15, 35, 65, .22) !important;
+}
+
+#sceneLabels .map-label[data-area="TRANS"] {
+    white-space: nowrap !important;
+    max-width: none !important;
+}
+
+#sceneLabels .map-label::before {
+    width: 8px !important;
+    height: 8px !important;
+    flex-basis: 8px !important;
+}
+
+#sceneLabels .map-label .ml-count {
+    color: var(--muted);
+    font-weight: 500;
+}
+
+/* leader: thin solid slate line, white dot with a status ring at the area end */
+.leader {
+    stroke: #475569 !important;
+    stroke-width: 1.3px !important;
+    stroke-dasharray: none !important;
+}
+
+.leader-dot {
+    fill: #ffffff !important;
+    stroke: #475569;
+    stroke-width: 2px !important;
+}
+
+.leader-dot.st-ok { stroke: var(--ok) !important; }
+.leader-dot.st-warning { stroke: var(--warning) !important; }
+.leader-dot.st-critical { stroke: var(--critical) !important; }
+
+/* « » in / out markers next to the doors */
+.door-mark {
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+    text-shadow: 0 1px 3px rgba(15, 35, 65, .55);
+    pointer-events: none;
+    z-index: 4;
+}
+
+/* zone summary under the map */
+.map-foot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem 1.5rem;
+    padding: .7rem 1.15rem .9rem;
+    color: var(--muted);
+    font-size: .82rem;
+}
+
+.map-foot b.st-critical { color: var(--critical); }
+.map-foot b.st-warning { color: #b7791f; }
+.map-foot b.st-ok { color: var(--ok); }
+
+/* =====================================================================
+   v11 – page like the mockup: the Warehouse layout card full width with a wide map,
+   the Shift report below it
+   ===================================================================== */
+
+.layout {
+    grid-template-columns: minmax(0, 1fr) !important;
+}
+
+.map-card {
+    height: auto !important;
+    min-height: 0 !important;
+    border-radius: 20px !important;
+    overflow: visible !important;
+}
+
+.map-head {
+    align-items: flex-end !important;
+    padding: 1.6rem 1.5rem .9rem !important;
+}
+
+.map-head h2 {
+    font-size: 1.4rem !important;
+    margin-bottom: .2rem !important;
+}
+
+.map-head .legend {
+    font-size: .88rem;
+    gap: 1.1rem;
+}
+
+.scene-wrap {
+    flex: none !important;
+    aspect-ratio: 1247 / 760;
+    margin: 0 1.5rem !important;
+    border-radius: 16px !important;
+}
+
+/* lighter, greyer blur as in the mockup */
+.scene-wrap::before {
+    background: linear-gradient(180deg, rgba(185, 205, 215, .42), rgba(120, 150, 165, .30)) !important;
+}
+
+.map-foot {
+    padding: 1rem 1.5rem 1.4rem !important;
+    font-size: .86rem !important;
+}
+
+#sceneLabels .map-label, #sceneLabels .map-label[data-area] {
+    gap: 8px !important;
+    min-height: 31px !important;
+    padding: 6px 16px 6px 13px !important;
+    font-size: 13px !important;
+}
+
+#sceneLabels .map-label::before {
+    width: 9px !important;
+    height: 9px !important;
+    flex-basis: 9px !important;
+}
+
+#sceneLabels .map-label .ml-count {
+    margin-left: 3px;
+}
+
+.door-mark {
+    font-size: 24px !important;
+}
+
+/* =====================================================================
+   v12 – Warehouse layout card exactly as the mockup (warehouse-layout-3d.html):
+   CSS-3D scene (scene3d.js), IBM Plex Sans, white pill labels standing on the floor
+   ===================================================================== */
+
+.map-card {
+    gap: 16px;
+    padding: 24px !important;
+    border: 1px solid #DCE0E3 !important;
+    border-radius: 18px !important;
+    box-shadow: none !important;
+    color: #16191D;
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+}
+
+.map-card .map-head {
+    align-items: flex-end !important;
+    gap: 16px !important;
+    padding: 0 !important;
+}
+
+.map-card .map-head h2 {
+    margin: 0 !important;
+    font-size: 22px !important;
+    font-weight: 700 !important;
+}
+
+.map-card .map-head .muted {
+    margin-top: 4px;
+    color: #5B636B !important;
+    font-size: 14px !important;
+}
+
+.map-card .legend {
+    gap: 16px !important;
+    color: #3E454C !important;
+    font-size: 14px !important;
+}
+
+.map-card .legend > span {
+    gap: 6px !important;
+}
+
+.map-card .legend .dot {
+    width: 10px;
+    height: 10px;
+}
+
+.map-card .legend .dot.st-ok { background: #2E8B57; }
+.map-card .legend .dot.st-warning { background: #C98A12; }
+.map-card .legend .dot.st-critical { background: #C8372D; }
+
+.map-card .scene-wrap {
+    flex: none !important;
+    aspect-ratio: auto !important;
+    margin: 0 !important;
+    border-radius: 14px !important;
+    background: #DDE5EC url("preview.webp") center / cover no-repeat !important;
+}
+
+.map-card .scene-wrap::before {
+    background: rgba(214, 226, 240, .32) !important;
+}
+
+.map-card #scene {
+    position: relative !important;
+    inset: auto !important;
+    height: 760px;
+    overflow: hidden;
+}
+
+.wl-stage {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 1080px;
+    height: 760px;
+    perspective: 3200px;
+    perspective-origin: 50% 40%;
+    overflow: hidden;
+    transform-origin: 50% 0;
+}
+
+.wl-plane {
+    position: absolute;
+    left: 256px;
+    top: 10px;
+    width: 700px;
+    height: 830px;
+    transform: rotateX(48deg);
+    transform-origin: 50% 50%;
+    transform-style: preserve-3d;
+}
+
+.wl-plane div {
+    transform-style: preserve-3d;
+}
+
+.wl-plane [data-area] {
+    cursor: pointer;
+}
+
+/* zone labels (stand upright on the floor) */
+.wl-label-inner {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform: translateX(-50%);
+}
+
+.wl-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 34px;
+    padding: 6px 12px 6px 10px;
+    border: 1px solid #DCE0E3;
+    border-radius: 999px;
+    color: #16191D;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    background: #FFFFFF;
+    box-shadow: 0 4px 12px rgba(20, 30, 50, .18);
+    cursor: pointer;
+    transition: box-shadow .15s ease;
+}
+
+.wl-label.hover, .wl-label:hover, .wl-label.selected {
+    box-shadow: 0 6px 18px rgba(20, 30, 50, .32), 0 0 0 2px rgba(31, 95, 168, .35);
+}
+
+.wl-label .wl-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.wl-label .count {
+    color: #5B636B;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.wl-label .count:empty {
+    display: none;
+}
+
+.wl-pin {
+    box-sizing: border-box;
+    border-radius: 50%;
+    background: #FFFFFF;
+}
+
+/* pictograms: flat layer above the 3D scene so racks never cut them off */
+.wl-pic-inner {
+    position: absolute;
+    left: 0;
+    bottom: 3px;
+    transform: translateX(-50%);
+}
+
+.wl-pic {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 2px solid #FFFFFF;
+    box-shadow: 0 3px 8px rgba(20, 30, 50, .35);
+    cursor: pointer;
+    transition: transform .15s ease;
+}
+
+.wl-pic.person {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+}
+
+.wl-pic.forklift {
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+}
+
+.wl-pic.linked, .wl-pic:hover {
+    transform: scale(1.18);
+}
+
+.wl-pic:focus-visible, .wl-label:focus-visible {
+    outline: 3px solid #1F5FA8;
+    outline-offset: 2px;
+}
+
+/* summary under the map */
+.map-card .map-foot {
+    gap: 8px 24px !important;
+    padding: 0 !important;
+    color: #3E454C !important;
+    font-size: 13px !important;
+}
+
+.map-card .map-foot b.st-critical { color: #A1271F; }
+.map-card .map-foot b.st-warning { color: #7F5300; }
+.map-card .map-foot b.st-ok { color: #1E6B42; }
+.map-card .map-foot .muted { color: #5B636B; }
+
+/* page content as wide as the mockup card (1320 px), centred; Shift report below the map */
+.layout {
+    max-width: calc(1320px + 2.5rem);
+    margin: 0 auto;
+}

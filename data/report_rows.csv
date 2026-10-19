@@ -1,0 +1,18 @@
+id,section,section_name,label,detail,target,kpis
+IM_P,PICK,Main WHS - Picking,IM,"RM Picking & delivery, FG Pick-up",0.5,
+EP_P,PICK,Main WHS - Picking,EP,RM Picking & putaway,0.4,
+ASM_P,PICK,Main WHS - Picking,Assembly,RM Picking & FG Putaway,3,
+OBC_P,PICK,Main WHS - Picking,OBC,RM Picking & delivery to re-pack,0.6,
+IM_T,TRANS,Main WHS - Production Material Transport,IM,FG Pick-up & FG Packaging,0.5,
+EP_T,TRANS,Main WHS - Production Material Transport,EP,"RM Delivery, FG Packaging & pick-up",0.6,
+ASM_T1,TRANS,Main WHS - Production Material Transport,Assembly,RM Delivery & empties,2,
+ASM_T2,TRANS,Main WHS - Production Material Transport,Assembly,FG Packaging & pick-up,1,
+OBC_T,TRANS,Main WHS - Production Material Transport,OBC,FG Packaging & FG Putaway,0.6,
+REC,IO,Incom. / Outg. WHS,Receiving,,2,Pallets;Deliveries
+SHP,IO,Incom. / Outg. WHS,Shipping,,3,Pallets;Delivery Notes
+H21,IO,Incom. / Outg. WHS,Hall 21,,1,
+RPK,IO,Incom. / Outg. WHS,Repack / Kitting,"RM Delivery to OBC, RM Empties from OBC to Repack",2,
+TRM,IO,Incom. / Outg. WHS,Traymaster,,1,
+SRT,IO,Incom. / Outg. WHS,Sorting,,3,
+OTH,SUP,Support & back-up,Other not-planned support actions,"Delivery for sorting, inventory, supporting other actions",0.3,
+ABS,SUP,Support & back-up,Possible back-up,,0.5,

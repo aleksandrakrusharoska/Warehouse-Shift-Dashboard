@@ -1,0 +1,6 @@
+.venv/
+__pycache__/
+*.pyc
+whs.db
+.idea/
+.playwright-mcp/
