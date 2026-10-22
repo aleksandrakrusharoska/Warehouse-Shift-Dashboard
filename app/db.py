@@ -129,6 +129,10 @@ def init_db() -> None:
         conn.executescript(SCHEMA)
         if conn.execute("SELECT COUNT(*) FROM report_rows").fetchone()[0] == 0:
             seed(conn)
+        else:
+            # Keep display labels in the existing local database in sync with the CSV source.
+            conn.execute("UPDATE report_rows SET label=? WHERE id=?", ("External Hall", "H21"))
+            conn.execute("UPDATE tasks SET name=? WHERE id=?", ("External Hall", "H21"))
 
 
 def seed(conn: sqlite3.Connection) -> None:

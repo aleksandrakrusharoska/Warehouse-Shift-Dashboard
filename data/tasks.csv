@@ -10,7 +10,7 @@ ASM_T2,ASM_T2,FG_PACK_FG_PICK,"FG Packaging, FG Pick-up","3.4;3.5"
 OBC_T,OBC_T,FG_PACK_FG_PUT,"FG Packaging, FG Putaway","3.4;3.6"
 REC,REC,RECEIVING,Receiving,"1.1;1.3"
 SHP,SHP,SHIPPING,Shipping,"4.1;4.5"
-H21,H21,HALL21,"Hall 21","1.3;3.5"
+H21,H21,HALL21,"External Hall","1.3;3.5"
 RPK,RPK,RM_DEL_EMPTIES_OBC,"RM Delivery to OBC, RM Empties from OBC to Repack","3.5;3.2"
 TRM,TRM,TRAYMASTER,Traymaster,2.7
 SRT,SRT,SORTING,Sorting,2.3

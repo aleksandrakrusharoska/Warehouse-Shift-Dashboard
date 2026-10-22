@@ -30,6 +30,8 @@ const initials = (name) => name.split(" ").map((x) => x[0]).join("").slice(0, 2)
 const lvlPill = (l) => `<span class="lvl lvl-${l || "none"}">${l || "–"}</span>`;
 const statusPill = (st, big = false) => (st && st !== "none" && st !== "inactive"
     ? `<span class="pill st-${st} ${big ? "pill-lg" : ""}"><i class="dot"></i>${esc(t(`st_${st}`))}</span>` : "");
+const reportStatus = (st) => (st && st !== "none" && st !== "inactive"
+    ? `<span class="rp-status-text"><i class="dot st-${st}"></i>${esc(t(`st_${st}`))}</span>` : "");
 
 function duration(seconds = 0) {
     const total = Math.max(0, Math.floor(Number(seconds) || 0));
@@ -227,7 +229,7 @@ function renderMapFoot() {
     }
     const d = new Date(), two = (x) => String(x).padStart(2, "0");
     $("mapFoot").innerHTML = ["critical", "warning", "ok"]
-        .map((st) => `<span><b class="st-${st}">${n[st]}</b> ${esc(t("foot_" + st))}</span>`).join("") +
+        .map((st) => `<span><i class="dot st-${st}"></i><b class="st-${st}">${n[st]}</b> ${esc(t("foot_" + st))}</span>`).join("") +
         `<span class="muted">${esc(t("foot_updated"))} ${two(d.getHours())}:${two(d.getMinutes())}</span>`;
 }
 
@@ -811,6 +813,10 @@ $("areaBody").addEventListener("change", async (e) => {
 
 // Shift report: one CSS grid template for the header AND every line, so the columns line up.
 // The rounded left edge of each section has the section's own map colour; the thin bar shows its status.
+const REPORT_ICON_PERSON = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.3 5.4a3.7 3.7 0 0 1 7.4 0z" fill="#FFD24A" stroke="#7A5A00" stroke-width="0.6"/><path d="M7.4 1.9h1.2v3.3H7.4z" fill="#E0B020"/><rect x="3.2" y="5.2" width="9.6" height="1.3" rx="0.65" fill="#FFD24A" stroke="#7A5A00" stroke-width="0.6"/><circle cx="8" cy="8.3" r="1.9" fill="#D9E5F2" stroke="#38506A" stroke-width="0.6"/><path d="M3 15.2c.4-2.8 2.4-4.4 5-4.4s4.6 1.6 5 4.4z" fill="#D9E5F2" stroke="#38506A" stroke-width="0.7"/><path d="M6.2 11.1l1.8 2.2 1.8-2.2" fill="none" stroke="#FF8A1F" stroke-width="0.9" stroke-linejoin="round"/></svg>';
+const REPORT_ICON_FORKLIFT = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="17" y="3" width="2.8" height="15.5" rx="0.6" fill="#394B5F" stroke="#182534" stroke-width="0.5"/><rect x="17" y="17" width="6.5" height="2.2" rx="0.6" fill="#394B5F" stroke="#182534" stroke-width="0.5"/><path d="M4.4 12V5.2h8.4V12" fill="none" stroke="#394B5F" stroke-width="1.7" stroke-linejoin="round"/><path d="M6.5 8.4a2.1 2.1 0 0 1 4.2 0z" fill="#FFD24A" stroke="#7A5A00" stroke-width="0.5"/><circle cx="8.6" cy="9.4" r="1.6" fill="#D9E5F2" stroke="#38506A" stroke-width="0.5"/><rect x="2.5" y="11.6" width="13" height="6.6" rx="1.2" fill="#F0A51A" stroke="#7A5A00" stroke-width="0.7"/><circle cx="6.2" cy="19.4" r="2.7" fill="#394B5F" stroke="#182534" stroke-width="0.8"/><circle cx="13" cy="19.4" r="2.7" fill="#394B5F" stroke="#182534" stroke-width="0.8"/></svg>';
+const reportSectionIcon = (code) => code === "TRANS" ? REPORT_ICON_FORKLIFT : REPORT_ICON_PERSON;
+
 function renderReport() {
     const ov = state.ov;
     const reportBody = $("reportBody");
@@ -818,6 +824,7 @@ function renderReport() {
 
     const line = (r, section) => {
         const own = allAreas().find((a) => a.opens.row === r.id);    // e.g. Sorting, Traymaster have their own colour
+        const progress = r.target ? Math.min(100, Math.round((Number(r.actual) / Number(r.target)) * 100)) : 0;
         return `
         <div class="rp-grid rp-line" data-line="${esc(r.id)}">
             <div class="rp-area">
@@ -830,57 +837,45 @@ function renderReport() {
                 ${r.remark ? `<div class="remark"><i class="bi bi-exclamation-triangle"></i> ${esc(r.remark)}</div>` : ""}
                 ${r.kpis.length ? `<div class="rp-kpis">${r.kpis.map((k) => `${esc(kpiName(k.name))}: <b>${esc(k.value || "–")}</b>`).join(" · ")}</div>` : ""}
             </div>
-            <div class="rp-status">${statusPill(r.status)}</div>
+            <div class="rp-status">${reportStatus(r.status)}</div>
         </div>`;
     };
-
-    reportBody.innerHTML = `
+    const columnHead = `
         <div class="rp-grid rp-head">
             <div>${esc(t("col_area"))}</div>
             <div class="rp-num">${esc(t("distribution"))}</div>
             <div class="rp-num">${esc(t("actual_distribution"))}</div>
             <div>${esc(t("employees_col"))}</div>
             <div class="rp-status">${esc(t("col_status"))}</div>
-        </div>
+        </div>`;
+
+    reportBody.innerHTML = `
         ${ov.sections.map((s) => {
-        const pct = s.task_count ? Math.round((s.covered / s.task_count) * 100) : 0;
         return `
             <section class="rp-section" data-section="${esc(s.code)}" style="--sec-color:${sectionColor(s.code)}">
                 <div class="rp-summary">
-    <div class="rp-summary-top">
-        <span class="rp-sec-name">${esc(sectionName(s))}</span>
-        ${statusPill(s.status)}
-    </div>
-
-    <div class="rp-bar">
-        <span
-            class="bar-fill st-${s.status}"
-            style="width:${pct}%"
-        ></span>
-    </div>
-
-    <div class="rp-summary-bottom">
-        <span>
-            ${esc(t("tasks_covered", {
-            a: s.covered,
-            b: s.task_count
-        }))}
-        </span>
-
-        <span>
-            <i class="bi bi-people"></i>
-            ${s.actual} / ${fmt(s.target)}
-        </span>
-    </div>
+                    <div class="rp-summary-top">
+                        <span class="rp-sec-name"><span class="rp-sec-icon">${reportSectionIcon(s.code)}</span>${esc(sectionName(s))}</span>
+                        <span class="rp-section-progress">
+                            <span class="rp-section-progress-label">${esc(t("tasks_covered", {a: s.covered, b: s.task_count}))}</span>
+                            <span class="rp-section-progress-bar">
+                                <span class="rp-section-progress-track">
+                                    <i class="rp-section-progress-fill st-${esc(s.status)}" style="width:${s.target ? Math.min(100, Math.round((Number(s.actual) / Number(s.target)) * 100)) : 0}%"></i>
+                                </span>
+                                <span>${s.target ? Math.min(100, Math.round((Number(s.actual) / Number(s.target)) * 100)) : 0}%</span>
+                            </span>
+                        </span>
+                    </div>
 </div>
+                ${columnHead}
                 ${s.rows.map((r) => line(r, s)).join("")}
             </section>`;
     }).join("")}
         <div class="rp-grid rp-total">
             <div>${esc(t("total_per_shift"))}</div>
-            <div class="rp-num">${fmt(ov.total_target)}</div>
-            <div class="rp-num">${ov.total_actual}</div>
-            <div></div><div></div>
+        <div></div><div></div>
+        <div class="rp-num">${fmt(ov.total_target)}</div>
+        <div class="rp-num">${ov.total_actual}</div>
         </div>`;
     fitReport();
 }
@@ -890,10 +885,11 @@ function renderReport() {
 function fitReport() {
     const body = $("reportBody");
     const box = body?.parentElement;
-    if (!box) return;
+    if (!box || !box.offsetHeight) return;   // hidden (the right panel shows the view choice)
     const apply = (scale) => {
         body.style.transform = scale !== 1 ? `scale(${scale})` : "";
         body.style.width = scale !== 1 ? `${100 / scale}%` : "";   // keeps the full panel width after scaling
+        body.style.marginBottom = "";
     };
     // largest scale (0.7 – 1.3×) at which the whole report still fits the panel: shrinks a long report and
     // grows a short one so there is no blank gap. Scaling changes the line wrapping (the text gets a different
@@ -902,17 +898,33 @@ function fitReport() {
         apply(scale);
         return body.scrollHeight * scale <= box.clientHeight;
     };
-    let lo = 0.7, hi = 1.3;
+    let lo = 0.6, hi = 1.3;
     if (fits(hi)) lo = hi;
     else for (let i = 0; i < 8; i++) {
         const mid = (lo + hi) / 2;
         if (fits(mid)) lo = mid;
         else hi = mid;
     }
-    apply(Math.floor(lo * 1000) / 1000);
+    const scale = Math.floor(lo * 1000) / 1000;
+    apply(scale);
+    // Keep the whole report visible in the panel; the compact lower bound handles the repeated section headers.
+    const fitsNow = body.scrollHeight * scale <= box.clientHeight;
+    box.style.overflowY = fitsNow ? "" : "auto";
+    if (!fitsNow) body.style.marginBottom = `${-body.scrollHeight * (1 - scale)}px`;
 }
 
 window.addEventListener("resize", fitReport);
+
+/* Right panel: first a choice between Shift report and Analytics; Shift report opens in the panel,
+   Analytics in its window. The back arrow in the report goes back to the choice. */
+const reportPanel = document.querySelector(".shift-report-panel");
+$("openReport").addEventListener("click", async () => {
+    reportPanel.classList.remove("choosing");
+    if (state.ov) renderReport();
+    else await refresh();
+    fitReport();
+});
+$("reportBackBtn").addEventListener("click", () => reportPanel.classList.add("choosing"));
 
 function destroyChart(chart) {
     if (chart) chart.destroy();
@@ -974,7 +986,7 @@ function renderAnalytics() {
     staffingChart = new Chart($("staffingChart"), {
         type: "doughnut",
         data: {
-            labels: ["Target reached", "Partially staffed", "Understaffed"],
+            labels: ["Acc. target allocation", "Partially allocated", "No allocation"],
             datasets: [{
                 data: [data.ok, data.warning, data.critical],
                 backgroundColor: ["#16a34a", "#d99a00", "#dc2626"],
@@ -1390,19 +1402,36 @@ function areaForRow(rowId) {
 }
 
 let reportHover = "";
+function reportSelectorForLine(rowId) {
+    return `[data-line="${CSS.escape(rowId)}"]`;
+}
+
+function reportSelectorForArea(areaId) {
+    const area = areaId && allAreas().find((x) => x.id === areaId);
+    if (area?.opens.row) return reportSelectorForLine(area.opens.row);
+    if (area?.opens.section) return `[data-section="${CSS.escape(area.opens.section)}"]`;
+    return null;
+}
+
 $("reportBody").addEventListener("mouseover", (e) => {
     const line = e.target.closest("[data-line]");
     const sec = !line && e.target.closest(".rp-summary") && e.target.closest("[data-section]");
     const key = line ? "l:" + line.dataset.line : sec ? "s:" + sec.dataset.section : "";
     if (key === reportHover) return;
     reportHover = key;
-    if (line) window.Scene3D?.highlight(areaForRow(line.dataset.line), line.dataset.line);
-    else if (sec) window.Scene3D?.highlight(LAYOUT.AREAS.find((a) => a.opens.section === sec.dataset.section)?.id || null, null);
-    else window.Scene3D?.highlight(null, null);
+    if (line) {
+        markReport(reportSelectorForLine(line.dataset.line));
+        window.Scene3D?.highlight(areaForRow(line.dataset.line), line.dataset.line);
+    } else if (sec) {
+        const area = LAYOUT.AREAS.find((a) => a.opens.section === sec.dataset.section);
+        markReport(`[data-section="${CSS.escape(sec.dataset.section)}"]`);
+        window.Scene3D?.highlight(area?.id || null, null);
+    }
 });
 $("reportBody").addEventListener("mouseleave", () => {
     reportHover = "";
-    window.Scene3D?.highlight(null, null);
+    markFromMap();
+    if (!mapHoverRow && !mapHoverArea) window.Scene3D?.highlight(null, null);
 });
 
 function markReport(selector) {
@@ -1412,20 +1441,19 @@ function markReport(selector) {
 
 let mapHoverRow = null, mapHoverArea = null;
 const markFromMap = () => {
-    if (mapHoverRow) return markReport(`[data-line="${CSS.escape(mapHoverRow)}"]`);
-    const a = mapHoverArea && allAreas().find((x) => x.id === mapHoverArea);
-    if (a?.opens.row) return markReport(`[data-line="${CSS.escape(a.opens.row)}"]`);
-    if (a?.opens.section) return markReport(`[data-section="${CSS.escape(a.opens.section)}"]`);
-    markReport(null);
+    if (mapHoverRow) return markReport(reportSelectorForLine(mapHoverRow));
+    markReport(reportSelectorForArea(mapHoverArea));
 };
 document.addEventListener("worker-hover", (e) => {
     const row = e.detail?.row || null;
     if (row === mapHoverRow) return;
     mapHoverRow = row;
+    if (row) mapHoverArea = null;
     markFromMap();
 });
 document.addEventListener("area-hover", (e) => {
     mapHoverArea = e.detail;
+    if (mapHoverArea) mapHoverRow = null;
     markFromMap();
 });
 
@@ -1460,9 +1488,26 @@ const WEEKDAYS = {
     mk: ["Нед", "Пон", "Вто", "Сре", "Чет", "Пет", "Саб"]
 };
 
+// header height → CSS (--top-h): the map and the Shift report fill the rest of the screen, also when the header wraps
+new ResizeObserver(([e]) => {
+    document.documentElement.style.setProperty("--top-h", `${Math.ceil(e.target.getBoundingClientRect().height)}px`);
+}).observe(document.querySelector(".topbar"));
+
+// shift times shown in the header (start hour, end hour, i18n key)
+const SHIFTS = [[6, 14, "shift_day"], [14, 22, "shift_afternoon"], [22, 6, "shift_night"]];
+
 function tick() {
+    const d = new Date(), two = (n) => String(n).padStart(2, "0"), h = d.getHours();
+    $("clock").textContent = `${WEEKDAYS[LANG][d.getDay()]}, ${two(d.getDate())}.${two(d.getMonth() + 1)}.${d.getFullYear()} ${two(h)}:${two(d.getMinutes())}`;
+    const [from, to, key] = SHIFTS.find(([a, b]) => (a < b ? h >= a && h < b : h >= a || h < b));
+    $("shiftName").textContent = `${t(key)}  ${two(from)}:00 – ${two(to)}:00`;
+}
+
+// "Operations live" in the header: time of the last successful refresh, red when the server is not reachable
+function setLive(ok) {
     const d = new Date(), two = (n) => String(n).padStart(2, "0");
-    $("clock").textContent = `${WEEKDAYS[LANG][d.getDay()]}, ${two(d.getDate())}.${two(d.getMonth() + 1)}.${d.getFullYear()} ${two(d.getHours())}:${two(d.getMinutes())}`;
+    $("liveInfo").classList.toggle("offline", !ok);
+    $("liveSub").textContent = ok ? t("live_updated", {t: `${two(d.getHours())}:${two(d.getMinutes())}`}) : t("live_offline");
 }
 
 // ---------------------------------------------------------------- refresh loop
@@ -1485,8 +1530,10 @@ async function refresh() {
     try {
         [state.ov, state.att] = await Promise.all([api(withTeam("/api/overview")), api(withTeam("/api/attendance"))]);
         renderAll();
+        setLive(true);
     } catch (err) {
         console.error(err);
+        setLive(false);
     }
 }
 

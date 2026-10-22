@@ -10,7 +10,7 @@ ASM_T2,TRANS,Main WHS - Production Material Transport,Assembly,FG Packaging & pi
 OBC_T,TRANS,Main WHS - Production Material Transport,OBC,FG Packaging & FG Putaway,0.6,
 REC,IO,Incom. / Outg. WHS,Receiving,,2,Pallets;Deliveries
 SHP,IO,Incom. / Outg. WHS,Shipping,,3,Pallets;Delivery Notes
-H21,IO,Incom. / Outg. WHS,Hall 21,,1,
+H21,IO,Incom. / Outg. WHS,External Hall,,1,
 RPK,IO,Incom. / Outg. WHS,Repack / Kitting,"RM Delivery to OBC, RM Empties from OBC to Repack",2,
 TRM,IO,Incom. / Outg. WHS,Traymaster,,1,
 SRT,IO,Incom. / Outg. WHS,Sorting,,3,
