@@ -8,7 +8,7 @@ const I18N = {
     worker_hint: "Click to choose a task and scan a badge", door_flow: "Material transport · in / out",
         team: "Team",
         all: "All",
-        btn_report: "Shift report",
+        btn_report: "Capacity allocation",
         btn_log: "Scan log",
         btn_ilu: "ILU",
         demo_fill: "Demo: fill the shift with scans",
@@ -23,7 +23,7 @@ const I18N = {
         shift_day: "Day shift",
         shift_afternoon: "Afternoon shift",
         shift_night: "Night shift",
-        layout_hint: "Live zones and material flow · click an area or a person",
+        layout_hint: "Click an area or a person",
         lg_flow: "Material flow",
         lg_forklift: "Forklift",
         lg_worker: "Worker",
@@ -98,7 +98,7 @@ const I18N = {
         // report pop-up
         report_title: "Warehouse shift handover",
         col_area: "Activity area and Position",
-        col_status: "Status",
+        col_status: "Utilization",
         total_per_shift: "Total per Shift",
         print: "Print",
 
@@ -149,7 +149,7 @@ const I18N = {
     worker_hint: "Кликнете за да изберете задача и скенирате картичка", door_flow: "Транспорт на материјал · влез / излез",
         team: "Тим",
         all: "Сите",
-        btn_report: "Извештај за смена",
+        btn_report: "Распределба на капацитет",
         btn_log: "Скенирања",
         btn_ilu: "ILU",
         demo_fill: "Демо: пополни ја смената со скенирања",
@@ -164,7 +164,7 @@ const I18N = {
         shift_day: "Дневна смена",
         shift_afternoon: "Попладневна смена",
         shift_night: "Ноќна смена",
-        layout_hint: "Зони и тек на материјал · кликнете на област или на личност",
+        layout_hint: "Кликнете на област или на личност",
         lg_flow: "Тек на материјал",
         lg_forklift: "Виљушкар",
         lg_worker: "Работник",
@@ -237,7 +237,7 @@ const I18N = {
 
         report_title: "Предавање на смена – магацин",
         col_area: "Област на активност и позиција",
-        col_status: "Статус",
+        col_status: "Искористеност",
         total_per_shift: "Вкупно по смена",
         print: "Печати",
 
