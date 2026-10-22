@@ -1997,6 +1997,7 @@ button {
 }
 
 #reportBody .rp-summary {
+    margin-bottom: 1.25rem !important;
     margin: 0 !important;
     padding: .55rem .85rem !important;
     border: 0;
@@ -2032,8 +2033,8 @@ button {
 }
 
 #reportBody .rp-section .rp-line {
-    margin-left: 0;
-    margin-right: 0;
+    margin-left: 2.5rem;
+    margin-right: 1.5rem;
     padding-left: .85rem !important;
     padding-right: .85rem !important;
     border-top-color: #e8eef5;
@@ -2044,7 +2045,7 @@ button {
 }
 
 #reportBody .rp-head {
-    margin-left: 1.5rem;
+    margin-left: 2.5rem;
     margin-right: 1.5rem;
     align-items: center;
     min-height: 30px;
@@ -2069,10 +2070,21 @@ button {
 }
 
 #reportBody .rp-link .muted {
-    display: block;
-    margin-top: .12rem;
+    display: inline;
+    margin-top: 0;
     font-size: .72rem;
     line-height: 1.15;
+}
+
+#reportBody .rp-link {
+    display: block;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    white-space: normal;
+}
+
+#reportBody .rp-area {
+    min-width: 0;
 }
 
 #reportBody .rp-num {
@@ -2493,6 +2505,12 @@ body.area-pop-open {
     background: #fff;
 }
 
+#reportBody .rp-section .rp-line,
+#reportBody .rp-section .rp-head {
+    margin-left: 3rem;
+    margin-right: 1.5rem;
+}
+
 #reportBody .rp-section .rp-summary {
     padding-top: .6rem !important;
     padding-bottom: .6rem !important;
@@ -2548,7 +2566,7 @@ body.area-pop-open {
    ===================================================================== */
 
 #areaModal .assigned-heading {
-    margin: 0 0 .35rem;   /* directly below the pop-up header (only the body padding above) */
+    margin: .8rem 0 .35rem;
 }
 
 #areaModal #taskPeople {
@@ -2584,7 +2602,7 @@ body.area-pop-open {
 }
 
 #areaModal .assign-more-title {
-    margin-top: .8rem;
+    margin-top: .3rem;
 }
 
 #areaModal .scan-card {
@@ -3247,11 +3265,11 @@ body.area-pop-open {
     aspect-ratio: auto !important;
     margin: 0 !important;
     border-radius: 14px !important;
-    background: #DDE5EC url("preview.webp") center / cover no-repeat !important;
+    background: #DDE5EC !important;
 }
 
 .map-card .scene-wrap::before {
-    background: rgba(214, 226, 240, .32) !important;
+    background: transparent !important;
 }
 
 .map-card #scene {
@@ -3264,15 +3282,21 @@ body.area-pop-open {
     position: absolute;
     left: 50%;
     top: 0;
-    /* width, height and perspective are set by scene3d.js (STAGE_W, STAGE_H, PERSP) */
+    width: 1080px;
+    height: 760px;
+    perspective: 3200px;
     perspective-origin: 50% 40%;
-    overflow: hidden;
+    overflow: visible;
     transform-origin: 50% 0;
 }
 
 .wl-plane {
     position: absolute;
-    /* left, top, width, height and the tilt (rotateX) are set by scene3d.js (PL, PT, PW, PH, TILT) */
+    left: 256px;
+    top: 10px;
+    width: 700px;
+    height: 830px;
+    transform: rotateX(40deg);
     transform-origin: 50% 50%;
     transform-style: preserve-3d;
 }
@@ -3414,7 +3438,7 @@ body.area-pop-open {
    and the map card has less padding around the map */
 @media (min-width: 1101px) {
     .layout {
-        grid-template-columns: minmax(0, 1.15fr) minmax(640px, 0.85fr);
+        grid-template-columns: minmax(0, 0.95fr) minmax(680px, 1.05fr);
     }
 }
 
@@ -3590,15 +3614,14 @@ body.area-pop-open {
     font-size: 1.25rem;
 }
 
-/* warehouse photo behind the 3D map (the scene itself is transparent around the building) */
+/* Keep the warehouse photo behind the transparent surrounding yard. */
 .map-card .scene-wrap {
     background: #0E2A33 url("/static/img/warehouse-bg.jpg") center / cover no-repeat !important;
 }
 
-/* light veil over the photo, so it is not too dark (as in the earlier map) */
 .map-card .scene-wrap::before {
     display: block !important;
-    background: linear-gradient(180deg, rgba(214, 226, 240, .48), rgba(185, 205, 220, .40)) !important;
+    background: linear-gradient(180deg, rgba(185, 205, 215, .42), rgba(120, 150, 165, .30)) !important;
 }
 
 .map-card .map-foot > span {
@@ -3830,10 +3853,44 @@ body.area-pop-open {
 }
 
 .shift-report-panel .card-head #reportBackBtn {
-    margin-right: 10px;
+    margin-right: 0;
 }
 
 .shift-report-panel > .card-head {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+}
+
+/* Historical warehouse layout: map on the left, report on the right. */
+@media (min-width: 1101px) {
+    .layout {
+        grid-template-columns: minmax(0, 0.9fr) minmax(680px, 1.1fr) !important;
+    }
+
+    .map-card {
+        height: calc(100vh - var(--top-h, 74px) - 38px) !important;
+        min-height: 560px !important;
+        overflow: hidden !important;
+        border-radius: 18px !important;
+    }
+
+    .map-card .scene-wrap {
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+        aspect-ratio: auto !important;
+        margin: 0 14px 10px !important;
+        border-radius: 14px !important;
+    }
+
+    .map-card #scene {
+        position: absolute !important;
+        inset: 0 !important;
+    }
+
+    .side {
+        height: calc(100vh - var(--top-h, 74px) - 38px) !important;
+        min-height: 560px !important;
+    }
 }

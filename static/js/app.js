@@ -150,17 +150,30 @@ function areaInfo(a) {
 
 // ---------------------------------------------------------------- 3D map + side panel
 function updateScene() {
-    if (!window.Scene3D || !state.ov) return;
+    if (!window.Scene3D) return;
+    const fallbackNames = {
+        SORT: "Sorting",
+        TRAY: "Tray",
+        SUP: "Supply",
+        IO: "Main WHS – Inbound / Outbound",
+        PICK: "Main WHS – Picking",
+        TRANS: "Main WHS – Production Material Transport",
+        RPK: "Repack / Kitting"
+    };
     const root = state.flow[0];
     const data = {};
     for (const a of LAYOUT.AREAS) {
         const info = areaInfo(a);
-        if (!info) continue;
         const sel = root && ((a.opens.section && root.type === "section" && root.id === a.opens.section) ||
             (a.opens.row && root.rowId === a.opens.row));
         // label: "Hall 21 · External  4" – name, optional note, number of people assigned
-        const name = info.name.replace(/ - /g, " – ");   // "Main WHS – Picking" (en dash on the map)
-        data[a.id] = {status: info.status, label: a.note ? `${name} · ${t(a.note)}` : name, count: info.count, selected: !!sel};
+        const name = (info?.name || fallbackNames[a.id] || a.id).replace(/ - /g, " – ");
+        data[a.id] = {
+            status: info?.status || "none",
+            label: a.note ? `${name} · ${t(a.note)}` : name,
+            count: null,
+            selected: !!sel
+        };
     }
     Scene3D.setAreas(data);
 
@@ -192,7 +205,7 @@ document.addEventListener("worker-hover", (e) => {
     if (d.row) {
         const {row} = findRow(d.row);
         if (!row) return;
-        title = rowDisplay(row);
+        title = d.row === "OTH" ? rowLabel(row) : rowDisplay(row);
         sub = "";
         status = row.status;
     } else if (d.area) {
@@ -219,19 +232,6 @@ document.addEventListener("worker-hover", (e) => {
     tip.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
     tip.classList.add("show");
 });
-
-// line under the map: how many zones are understaffed / partially staffed / at target + update time
-function renderMapFoot() {
-    const n = {critical: 0, warning: 0, ok: 0};
-    for (const a of LAYOUT.AREAS) {
-        const st = areaInfo(a)?.status;
-        if (st in n) n[st]++;
-    }
-    const d = new Date(), two = (x) => String(x).padStart(2, "0");
-    $("mapFoot").innerHTML = ["critical", "warning", "ok"]
-        .map((st) => `<span><i class="dot st-${st}"></i><b class="st-${st}">${n[st]}</b> ${esc(t("foot_" + st))}</span>`).join("") +
-        `<span class="muted">${esc(t("foot_updated"))} ${two(d.getHours())}:${two(d.getMinutes())}</span>`;
-}
 
 function renderOffMap() {
     $("offMap").innerHTML = LAYOUT.OFF_MAP.map((a) => {
@@ -550,23 +550,7 @@ function taskView(step) {
                 : "";
 
     return `
-        <!-- 1. Assigned operators -->
-        <div class="assigned-heading">
-    <div class="section-label assigned-title">
-        ${esc(t("on_task", {n: task.actual}))}
-    </div>
-
-    <div class="assigned-action-headings">
-        <span>ILU qualification</span>
-        <span>Remove</span>
-    </div>
-</div>
-
-        <div id="taskPeople">
-            ${peopleList(task)}
-        </div>
-
-        <!-- 2. Add another operator -->
+        <!-- 1. Add another operator -->
         <div class="section-label task-section-title assign-more-title">
             Assign additionally
         </div>
@@ -598,6 +582,22 @@ function taskView(step) {
 
         <div class="demo-badges" id="demoBadges">
             ${demoBadges(task)}
+        </div>
+
+        <!-- 2. Assigned operators -->
+        <div class="assigned-heading">
+            <div class="section-label assigned-title">
+                ${esc(t("on_task", {n: task.actual}))}
+            </div>
+
+            <div class="assigned-action-headings">
+                <span>ILU qualification</span>
+                <span>Remove</span>
+            </div>
+        </div>
+
+        <div id="taskPeople">
+            ${peopleList(task)}
         </div>
     `;
 }
@@ -873,9 +873,9 @@ function renderReport() {
     }).join("")}
         <div class="rp-grid rp-total">
             <div>${esc(t("total_per_shift"))}</div>
-        <div></div><div></div>
         <div class="rp-num">${fmt(ov.total_target)}</div>
         <div class="rp-num">${ov.total_actual}</div>
+        <div></div><div></div>
         </div>`;
     fitReport();
 }
@@ -1503,18 +1503,10 @@ function tick() {
     $("shiftName").textContent = `${t(key)}  ${two(from)}:00 – ${two(to)}:00`;
 }
 
-// "Operations live" in the header: time of the last successful refresh, red when the server is not reachable
-function setLive(ok) {
-    const d = new Date(), two = (n) => String(n).padStart(2, "0");
-    $("liveInfo").classList.toggle("offline", !ok);
-    $("liveSub").textContent = ok ? t("live_updated", {t: `${two(d.getHours())}:${two(d.getMinutes())}`}) : t("live_offline");
-}
-
 // ---------------------------------------------------------------- refresh loop
 function renderAll(full = false) {
     renderReport();
     renderOffMap();
-    renderMapFoot();
     updateScene();
 
     if ($("areaModal").classList.contains("show")) {
@@ -1530,10 +1522,8 @@ async function refresh() {
     try {
         [state.ov, state.att] = await Promise.all([api(withTeam("/api/overview")), api(withTeam("/api/attendance"))]);
         renderAll();
-        setLive(true);
     } catch (err) {
         console.error(err);
-        setLive(false);
     }
 }
 
