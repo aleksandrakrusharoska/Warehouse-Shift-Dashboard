@@ -7,8 +7,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-    <link href="/static/css/style.css?v=260" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="/static/css/style.css?v=288" rel="stylesheet">
 </head>
 <body>
 
@@ -21,6 +21,14 @@
         </div>
     </div>
     <div class="top-actions">
+        <button type="button" class="btn-soft" id="btnReport"><i class="bi bi-clipboard-data"></i><span
+                data-i18n="btn_report">Capacity allocation</span></button>
+        <button type="button" class="btn-soft" id="btnAnalytics">
+            <i class="bi bi-bar-chart-line"></i>
+            <span>Analytics</span>
+        </button>
+        <button type="button" class="btn-soft" data-bs-toggle="modal" data-bs-target="#logModal" data-i18n-title="btn_log"><i
+                class="bi bi-upc-scan"></i><span data-i18n="btn_log">Scan log</span></button>
         <div class="seg" id="teamFilter" role="group" aria-label="Team filter">
             <span class="seg-label" data-i18n="team">Team</span>
             <button type="button" class="active" data-team="" data-i18n="all">All</button>
@@ -32,14 +40,6 @@
             <button type="button" data-lang="en">EN</button>
             <button type="button" data-lang="mk">MK</button>
         </div>
-        <button type="button" class="btn-soft" data-bs-toggle="modal" data-bs-target="#logModal" data-i18n-title="btn_log"><i
-                class="bi bi-upc-scan"></i><span data-i18n="btn_log">Scan log</span></button>
-        <button type="button" class="btn-soft" data-bs-toggle="modal" data-bs-target="#iluModal" data-i18n-title="btn_ilu"><i
-                class="bi bi-mortarboard"></i><span data-i18n="btn_ilu">ILU</span></button>
-        <button type="button" class="btn-soft" data-bs-toggle="modal" data-bs-target="#analyticsModal" title="Analytics">
-            <i class="bi bi-bar-chart-line"></i>
-            <span>Analytics</span>
-        </button>
         <div class="dropdown">
             <button type="button" class="btn-soft icon-only" data-bs-toggle="dropdown" aria-label="More"><i
                     class="bi bi-three-dots"></i></button>
@@ -74,9 +74,9 @@
                 <div class="muted small" data-i18n="layout_hint"></div>
             </div>
             <div class="legend">
-                <span><i class="dot st-ok"></i><span data-i18n="st_ok_legend"></span></span>
-                <span><i class="dot st-warning"></i><span data-i18n="st_warning_legend"></span></span>
-                <span><i class="dot st-critical"></i><span data-i18n="st_critical_legend"></span></span>
+                <span><i class="lg-pic forklift" data-legend-icon="forklift"></i><span data-i18n="lg_forklift">Forklift</span></span>
+                <span><i class="lg-pic person" data-legend-icon="person"></i><span data-i18n="lg_worker">Operator</span></span>
+                <span><i class="bi bi-box-seam lg-goods"></i><span data-i18n="lg_goods">Pallets / Goods</span></span>
             </div>
         </div>
         <div class="scene-wrap">
@@ -100,7 +100,7 @@
                     <b data-i18n="btn_report">Capacity allocation</b>
                     <span data-i18n="report_sub"></span>
                 </button>
-                <button type="button" class="choice-btn" data-bs-toggle="modal" data-bs-target="#analyticsModal">
+                <button type="button" class="choice-btn" id="openAnalytics">
                     <i class="bi bi-bar-chart-line"></i>
                     <b>Analytics</b>
                     <span data-i18n="analytics_sub"></span>
@@ -108,12 +108,75 @@
             </div>
 
             <div class="card-head">
-                <button type="button" class="round-btn" id="reportBackBtn" data-i18n-title="back"><i class="bi bi-arrow-left"></i></button>
+                <span class="report-icon" aria-hidden="true"><i class="bi bi-clipboard-data"></i></span>
                 <h3 data-i18n="btn_report">Capacity allocation</h3>
+                <div class="legend report-legend">
+                    <span><i class="dot st-ok"></i><span data-i18n="st_ok_legend"></span></span>
+                    <span><i class="dot st-critical"></i><span data-i18n="st_critical_legend"></span></span>
+                </div>
             </div>
+
+            <!-- Total staff · On shift · Late · Absent (from /api/attendance) -->
+            <div class="report-kpis" id="reportKpis"></div>
 
             <div class="report-panel-scroll">
                 <div id="reportBody"></div>
+            </div>
+
+            <!-- Analytics: opens here, in place of Capacity allocation (header button) -->
+            <div class="analytics-view">
+                <div class="card-head">
+                    <span class="report-icon" aria-hidden="true"><i class="bi bi-bar-chart-line"></i></span>
+                    <h3>Analytics</h3>
+                </div>
+                <!-- charts in one row, then Tasks needing attention, then the employee table (only it scrolls) -->
+                <div class="analytics-body">
+                    <section class="analytics-card an-staffing">
+                        <h3>Task staffing status</h3>
+                        <div class="chart-wrap">
+                            <canvas id="staffingChart"></canvas>
+                        </div>
+                    </section>
+
+                    <section class="analytics-card an-attendance">
+                        <h3>Attendance</h3>
+                        <div class="chart-wrap">
+                            <canvas id="attendanceChart"></canvas>
+                        </div>
+                    </section>
+
+                    <section class="analytics-card an-capacity">
+                        <h3>Planned capacity vs assigned employees</h3>
+                        <div class="chart-wrap">
+                            <canvas id="capacityChart"></canvas>
+                        </div>
+                    </section>
+
+                    <section class="analytics-card an-attention">
+                        <h3>Tasks needing attention</h3>
+                        <div id="attentionList"></div>
+                    </section>
+
+                    <section class="analytics-card an-employees">
+                        <h3>Employee time overview</h3>
+                        <div class="an-table-scroll">
+                            <table class="table x-table work-time-table">
+                                <thead>
+                                <tr>
+                                    <th>Employee</th>
+                                    <th>Status</th>
+                                    <th>Shift started</th>
+                                    <th>Worked</th>
+                                    <th>Break</th>
+                                    <th>Current task(s)</th>
+                                </tr>
+                                </thead>
+
+                                <tbody id="workTimeTable"></tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
             </div>
         </section>
     </aside>
@@ -198,115 +261,6 @@
     </div>
 </div>
 
-<!-- ================= Analytics pop-up ================= -->
-<div class="modal fade" id="analyticsModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content x-modal">
-            <div class="x-modal-head">
-                <div class="x-title">
-                    <i class="bi bi-bar-chart-line"></i>
-                    <span>Shift analytics</span>
-                </div>
-
-                <button type="button" class="round-btn ms-auto" data-bs-dismiss="modal" aria-label="Close">
-                    <i class="bi bi-x-lg"></i>
-                </button>
-            </div>
-
-            <div class="modal-body">
-                <div class="analytics-grid">
-                    <section class="analytics-card">
-                        <h3>Task staffing status</h3>
-                        <div class="chart-wrap">
-                            <canvas id="staffingChart"></canvas>
-                        </div>
-                    </section>
-
-                    <section class="analytics-card">
-                        <h3>Attendance</h3>
-                        <div class="chart-wrap">
-                            <canvas id="attendanceChart"></canvas>
-                        </div>
-                    </section>
-                </div>
-
-                <section class="analytics-card analytics-card-wide">
-                    <h3>Planned capacity vs assigned employees</h3>
-                    <div class="chart-wrap chart-wrap-bar">
-                        <canvas id="capacityChart"></canvas>
-                    </div>
-                </section>
-
-                <section class="analytics-card analytics-card-wide">
-                    <h3>Employee work time</h3>
-
-                    <div class="work-kpi-grid">
-                        <div class="work-kpi working">
-                            <span class="work-kpi-label">Working now</span>
-                            <strong id="workWorking">0</strong>
-                        </div>
-
-                        <div class="work-kpi break">
-                            <span class="work-kpi-label">On break</span>
-                            <strong id="workOnBreak">0</strong>
-                        </div>
-
-                        <div class="work-kpi finished">
-                            <span class="work-kpi-label">Finished shift</span>
-                            <strong id="workFinished">0</strong>
-                        </div>
-
-                        <div class="work-kpi">
-                            <span class="work-kpi-label">Total worked time</span>
-                            <strong id="workTotal">00:00</strong>
-                        </div>
-
-                        <div class="work-kpi">
-                            <span class="work-kpi-label">Total break time</span>
-                            <strong id="breakTotal">00:00</strong>
-                        </div>
-
-                        <div class="work-kpi">
-                            <span class="work-kpi-label">Average worked time</span>
-                            <strong id="workAverage">00:00</strong>
-                        </div>
-                    </div>
-
-                    <div class="chart-wrap chart-wrap-work">
-                        <canvas id="workedTimeChart"></canvas>
-                    </div>
-                </section>
-
-                <section class="analytics-card analytics-card-wide">
-                    <h3>Employee time overview</h3>
-
-                    <div class="table-responsive">
-                        <table class="table x-table work-time-table">
-                            <thead>
-                            <tr>
-                                <th>Employee</th>
-                                <th>Status</th>
-                                <th>Shift started</th>
-                                <th>Worked</th>
-                                <th>Break</th>
-                                <th>Current task(s)</th>
-                            </tr>
-                            </thead>
-
-                            <tbody id="workTimeTable"></tbody>
-                        </table>
-                    </div>
-                </section>
-
-                <section class="analytics-card analytics-card-wide">
-                    <h3>Tasks needing attention</h3>
-                    <div id="attentionList"></div>
-                </section>
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
     <div id="toast" class="toast x-toast" role="alert">
         <div class="d-flex align-items-center">
@@ -317,13 +271,13 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/static/js/i18n.js?v=272"></script>
-<script src="/static/js/layout.js?v=275"></script>
-<script src="/static/js/app.js?v=248"></script>
+<script src="/static/js/i18n.js?v=280"></script>
+<script src="/static/js/layout.js?v=282"></script>
+<script src="/static/js/app.js?v=262"></script>
 <script type="importmap">
 {"imports": {"three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
              "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
 </script>
-<script type="module" src="/static/js/scene3d.js?v=285"></script>
+<script type="module" src="/static/js/scene3d.js?v=289"></script>
 </body>
 </html>

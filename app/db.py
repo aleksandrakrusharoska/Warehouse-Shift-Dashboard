@@ -1,5 +1,8 @@
 """SQLite storage (Python standard library, no database server needed).
 
+When the environment variable DATABASE_URL is set (e.g. Supabase on Render), PostgreSQL is used instead.
+The queries in services.py stay written for SQLite; _PgConnection translates the few differences.
+
 On first start the tables are created and filled from the CSV files in /data:
   - report_rows.csv -> the lines of the WHS Shift Change Report ("Distribution" block):
                        section, label (IM, EP, Assembly …), detail, target (0.5, 0.6, 2 …)
@@ -13,6 +16,8 @@ Load your real ILU matrix with:  python tools/import_ilu.py <file>
 After changing a CSV: delete whs.db and restart.
 """
 import csv
+import os
+import re
 import sqlite3
 from contextlib import contextmanager
 from pathlib import Path
@@ -20,6 +25,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = BASE_DIR / "data"
 DB_PATH = BASE_DIR / "whs.db"
+DATABASE_URL = os.environ.get("DATABASE_URL", "").strip()
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS skills (
@@ -109,8 +115,65 @@ def connect() -> sqlite3.Connection:
     return conn
 
 
+# ---------------------------------------------------------------- PostgreSQL (DATABASE_URL)
+class _PgRow(dict):
+    """Row readable by name and by position, like sqlite3.Row."""
+
+    def __getitem__(self, key):
+        if isinstance(key, int):
+            return list(self.values())[key]
+        return super().__getitem__(key)
+
+
+def _pg_row_factory(cursor):
+    names = [c.name for c in cursor.description or []]
+    return lambda values: _PgRow(zip(names, values))
+
+
+_GROUP_CONCAT = re.compile(r"GROUP_CONCAT\((DISTINCT\s+)?([^)]+)\)", re.IGNORECASE)
+
+
+def _to_pg(sql: str) -> str:
+    sql = sql.replace("%", "%%").replace("?", "%s")
+    sql = sql.replace("INTEGER PRIMARY KEY AUTOINCREMENT", "SERIAL PRIMARY KEY")
+    return _GROUP_CONCAT.sub(r"STRING_AGG(\1\2, ',')", sql)
+
+
+class _PgConnection:
+    """The subset of the sqlite3.Connection API used by this app, on a psycopg connection."""
+
+    def __init__(self, conn):
+        self._conn = conn
+
+    def execute(self, sql: str, params=()):
+        return self._conn.execute(_to_pg(sql), tuple(params))
+
+    def executescript(self, sql: str):
+        self._conn.execute(_to_pg(sql).replace("%%", "%"))
+
+    def commit(self):
+        self._conn.commit()
+
+
+_pg_pool = None
+
+
+def _get_pg_pool():
+    global _pg_pool
+    if _pg_pool is None:
+        from psycopg_pool import ConnectionPool
+        # prepare_threshold=None: no server-side prepared statements, so the Supabase pooler works in every mode.
+        _pg_pool = ConnectionPool(DATABASE_URL, min_size=1, max_size=5, open=True,
+                                  kwargs={"prepare_threshold": None, "row_factory": _pg_row_factory})
+    return _pg_pool
+
+
 @contextmanager
 def get_conn():
+    if DATABASE_URL:
+        with _get_pg_pool().connection() as pg:   # commits on success, rolls back on error
+            yield _PgConnection(pg)
+        return
     conn = connect()
     try:
         yield conn
@@ -133,6 +196,9 @@ def init_db() -> None:
             # Keep display labels in the existing local database in sync with the CSV source.
             conn.execute("UPDATE report_rows SET label=? WHERE id=?", ("External Hall", "H21"))
             conn.execute("UPDATE tasks SET name=? WHERE id=?", ("External Hall", "H21"))
+            # A line moved to another section in report_rows.csv (e.g. Traymaster, Sorting → Support & back-up).
+            for row in _read_csv("report_rows.csv"):
+                conn.execute("UPDATE report_rows SET section_code=? WHERE id=?", (row["section"], row["id"]))
 
 
 def seed(conn: sqlite3.Connection) -> None:

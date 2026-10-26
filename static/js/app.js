@@ -12,7 +12,8 @@ const PAGE_SIZE = {iluEmp: 8};
 let staffingChart = null;
 let attendanceChart = null;
 let capacityChart = null;
-let workedTimeChart = null;
+// charts use the same font as the rest of the page
+if (window.Chart) Chart.defaults.font.family = '"Inter", "Segoe UI", system-ui, sans-serif';
 
 // ---------------------------------------------------------------- helpers
 const $ = (id) => document.getElementById(id);
@@ -152,8 +153,6 @@ function areaInfo(a) {
 function updateScene() {
     if (!window.Scene3D) return;
     const fallbackNames = {
-        SORT: "Sorting",
-        TRAY: "Tray",
         SUP: "Supply",
         IO: "Main WHS – Inbound / Outbound",
         PICK: "Main WHS – Picking",
@@ -185,10 +184,6 @@ function updateScene() {
 }
 
 document.addEventListener("scene-ready", updateScene);
-document.addEventListener("area-click", (e) => {
-    const a = allAreas().find((x) => x.id === e.detail);
-    if (a) openArea(a.opens);
-});
 /* Click a worker pictogram on the layout → pop-up of its report line
    (e.g. Assembly → RM Picking, FG Putaway → choose one → scan the badge) */
 document.addEventListener("worker-click", (e) => {
@@ -823,7 +818,7 @@ function renderReport() {
     if (!ov || !reportBody) return;
 
     const line = (r, section) => {
-        const own = allAreas().find((a) => a.opens.row === r.id);    // e.g. Sorting, Traymaster have their own colour
+        const own = allAreas().find((a) => a.opens.row === r.id);    // e.g. Repack / Kitting has its own colour
         const progress = r.target ? Math.min(100, Math.round((Number(r.actual) / Number(r.target)) * 100)) : 0;
         return `
         <div class="rp-grid rp-line" data-line="${esc(r.id)}">
@@ -833,11 +828,12 @@ function renderReport() {
             <div class="rp-num">${fmt(r.target)}</div>
             <div class="rp-num">${r.actual}</div>
             <div class="rp-emp">
-                ${r.employees ? esc(r.employees) : `<span class="muted">${esc(t("no_one_yet"))}</span>`}
+                ${r.employees ? r.employees.split(", ").map((n) => `<div class="rp-emp-name">${esc(n)}</div>`).join("") : `<span class="muted">${esc(t("no_one_yet"))}</span>`}
                 ${r.remark ? `<div class="remark"><i class="bi bi-exclamation-triangle"></i> ${esc(r.remark)}</div>` : ""}
                 ${r.kpis.length ? `<div class="rp-kpis">${r.kpis.map((k) => `${esc(kpiName(k.name))}: <b>${esc(k.value || "–")}</b>`).join(" · ")}</div>` : ""}
             </div>
             <div class="rp-status">${reportStatus(r.status)}</div>
+            <div class="rp-eff">${r.target ? `<span class="rp-eff-track"><i class="rp-eff-fill" style="width:${progress}%"></i></span><span class="rp-eff-pct">${progress}%</span>` : `<span class="muted">–</span>`}</div>
         </div>`;
     };
     const columnHead = `
@@ -847,26 +843,25 @@ function renderReport() {
             <div class="rp-num">${esc(t("actual_distribution"))}</div>
             <div>${esc(t("employees_col"))}</div>
             <div class="rp-status">${esc(t("col_status"))}</div>
+            <div class="rp-eff">${esc(t("col_efficiency"))}</div>
         </div>`;
 
     reportBody.innerHTML = `
         ${ov.sections.map((s) => {
+        const pct = s.target ? Math.min(100, Math.round((Number(s.actual) / Number(s.target)) * 100)) : 0;
+        // name on top; under it a bar in the section colour, the percent and "3 / 4 positions"
         return `
             <section class="rp-section" data-section="${esc(s.code)}" style="--sec-color:${sectionColor(s.code)}">
                 <div class="rp-summary">
                     <div class="rp-summary-top">
                         <span class="rp-sec-name"><span class="rp-sec-icon">${reportSectionIcon(s.code)}</span>${esc(sectionName(s))}</span>
-                        <span class="rp-section-progress">
-                            <span class="rp-section-progress-label">${esc(t("tasks_covered", {a: s.covered, b: s.task_count}))}</span>
-                            <span class="rp-section-progress-bar">
-                                <span class="rp-section-progress-track">
-                                    <i class="rp-section-progress-fill st-${esc(s.status)}" style="width:${s.target ? Math.min(100, Math.round((Number(s.actual) / Number(s.target)) * 100)) : 0}%"></i>
-                                </span>
-                                <span>${s.target ? Math.min(100, Math.round((Number(s.actual) / Number(s.target)) * 100)) : 0}%</span>
-                            </span>
-                        </span>
                     </div>
-</div>
+                    <div class="rp-sec-progress">
+                        <span class="rp-sec-track"><i class="rp-sec-fill" style="width:${pct}%"></i></span>
+                        <span class="rp-sec-pct">${pct}%</span>
+                        <span class="rp-sec-count">${esc(t("sec_staffed", {a: s.covered, b: s.task_count}))}</span>
+                    </div>
+                </div>
                 ${columnHead}
                 ${s.rows.map((r) => line(r, s)).join("")}
             </section>`;
@@ -875,7 +870,7 @@ function renderReport() {
             <div>${esc(t("total_per_shift"))}</div>
         <div class="rp-num">${fmt(ov.total_target)}</div>
         <div class="rp-num">${ov.total_actual}</div>
-        <div></div><div></div>
+        <div></div><div></div><div></div>
         </div>`;
     fitReport();
 }
@@ -915,16 +910,39 @@ function fitReport() {
 
 window.addEventListener("resize", fitReport);
 
-/* Right panel: first a choice between Shift report and Analytics; Shift report opens in the panel,
-   Analytics in its window. The back arrow in the report goes back to the choice. */
+/* Right panel: Capacity allocation or Analytics, switched with the buttons in the header
+   (the active one is highlighted). */
 const reportPanel = document.querySelector(".shift-report-panel");
-$("openReport").addEventListener("click", async () => {
-    reportPanel.classList.remove("choosing");
+const analyticsOpen = () => reportPanel.classList.contains("analytics");
+
+function markPanelButtons() {
+    $("btnReport").classList.toggle("active", !analyticsOpen());
+    $("btnAnalytics").classList.toggle("active", analyticsOpen());
+}
+
+async function openReport() {
+    reportPanel.classList.remove("choosing", "analytics");
+    markPanelButtons();
     if (state.ov) renderReport();
     else await refresh();
     fitReport();
-});
-$("reportBackBtn").addEventListener("click", () => reportPanel.classList.add("choosing"));
+}
+
+async function openAnalytics() {
+    reportPanel.classList.remove("choosing");
+    reportPanel.classList.add("analytics");
+    markPanelButtons();
+    document.querySelector(".an-table-scroll").scrollTop = 0;   // the employee table opens at the top
+    if (!state.ov) await refresh();
+    renderAnalytics();
+    await renderWorkTimeAnalytics();
+}
+
+$("openReport").addEventListener("click", openReport);
+$("btnReport").addEventListener("click", openReport);
+$("openAnalytics").addEventListener("click", openAnalytics);
+$("btnAnalytics").addEventListener("click", openAnalytics);
+markPanelButtons();
 
 function destroyChart(chart) {
     if (chart) chart.destroy();
@@ -974,7 +992,8 @@ function analyticsData() {
     return result;
 }
 
-function renderAnalytics() {
+// animate = false for the live refresh, so the charts update without jumping
+function renderAnalytics(animate = true) {
     if (!state.ov || !state.att || !window.Chart) return;
 
     const data = analyticsData();
@@ -994,6 +1013,7 @@ function renderAnalytics() {
             }]
         },
         options: {
+            animation: animate ? undefined : false,
             responsive: true,
             maintainAspectRatio: false,
             cutout: "68%",
@@ -1020,6 +1040,7 @@ function renderAnalytics() {
             }]
         },
         options: {
+            animation: animate ? undefined : false,
             responsive: true,
             maintainAspectRatio: false,
             cutout: "68%",
@@ -1038,7 +1059,8 @@ function renderAnalytics() {
     capacityChart = new Chart($("capacityChart"), {
         type: "bar",
         data: {
-            labels: data.sections.map((s) => s.name),
+            // "Main WHS - Production Material Transport" → two lines next to its bars
+            labels: data.sections.map((s) => s.name.split(" - ")),
             datasets: [
                 {
                     label: "Planned capacity",
@@ -1057,19 +1079,15 @@ function renderAnalytics() {
             ]
         },
         options: {
+            animation: animate ? undefined : false,
+            indexAxis: "y",   // horizontal bars: the section names stay readable in a narrow card
             responsive: true,
             maintainAspectRatio: false,
             scales: {
-                y: {
+                x: {
                     beginAtZero: true,
                     ticks: {
                         precision: 0
-                    }
-                },
-                x: {
-                    ticks: {
-                        maxRotation: 35,
-                        minRotation: 0
                     }
                 }
             },
@@ -1106,76 +1124,6 @@ function renderAnalytics() {
 async function renderWorkTimeAnalytics() {
     const data = await api(withTeam("/api/analytics/work-time"));
 
-    $("workWorking").textContent = data.counts.WORKING;
-    $("workOnBreak").textContent = data.counts.ON_BREAK;
-    $("workFinished").textContent = data.counts.FINISHED;
-    $("workTotal").textContent = duration(data.total_worked_seconds);
-    $("breakTotal").textContent = duration(data.total_break_seconds);
-    $("workAverage").textContent = duration(data.average_worked_seconds);
-
-    // Show employees who started the shift, longest worked time first.
-    const employees = [...data.employees]
-        .filter((employee) => employee.work_status !== "NOT_STARTED")
-        .sort((a, b) => b.worked_seconds - a.worked_seconds);
-
-    if (workedTimeChart) {
-        workedTimeChart.destroy();
-    }
-
-    workedTimeChart = new Chart($("workedTimeChart"), {
-        type: "bar",
-        data: {
-            labels: employees.map((employee) => employee.name),
-            datasets: [
-                {
-                    label: "Worked time (hours)",
-                    data: employees.map((employee) =>
-                        Number((employee.worked_seconds / 3600).toFixed(2))
-                    ),
-                    backgroundColor: employees.map((employee) => {
-                        if (employee.work_status === "ON_BREAK") return "#f4c84f";
-                        if (employee.work_status === "FINISHED") return "#94a3b8";
-                        return "#22a85a";
-                    }),
-                    borderRadius: 6,
-                    borderSkipped: false
-                }
-            ]
-        },
-        options: {
-            indexAxis: "y",
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                x: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: "Hours worked"
-                    }
-                },
-                y: {
-                    ticks: {
-                        autoSkip: false
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    display: false
-                },
-                tooltip: {
-                    callbacks: {
-                        label: (context) => {
-                            const employee = employees[context.dataIndex];
-                            return `Worked: ${duration(employee.worked_seconds)} · Break: ${duration(employee.break_seconds)}`;
-                        }
-                    }
-                }
-            }
-        }
-    });
-
     $("workTimeTable").innerHTML = data.employees.map((employee) => `
     <tr>
       <td>
@@ -1197,11 +1145,6 @@ async function renderWorkTimeAnalytics() {
     </tr>
   `).join("");
 }
-
-$("analyticsModal").addEventListener("show.bs.modal", async () => {
-    renderAnalytics();
-    await renderWorkTimeAnalytics();
-});
 
 // ---------------------------------------------------------------- scan log pop-up
 const EVENT_ICON = {
@@ -1374,7 +1317,7 @@ $("langSwitch").addEventListener("click", (e) => {
     renderAll(true);
     if ($("iluModal").classList.contains("show")) renderIlu();
     if ($("logModal").classList.contains("show")) loadLog();
-    if ($("analyticsModal").classList.contains("show")) {
+    if (analyticsOpen()) {
         renderWorkTimeAnalytics();
     }
 });
@@ -1395,7 +1338,7 @@ $("btnNewShift").addEventListener("click", async () => {
    hover a group heading → the whole area. Hover a pictogram / area on the layout → its line / group
    is highlighted in the report. */
 function areaForRow(rowId) {
-    const own = LAYOUT.AREAS.find((a) => a.opens.row === rowId);   // Sorting, Traymaster
+    const own = LAYOUT.AREAS.find((a) => a.opens.row === rowId);   // a line with its own zone (Repack, Hall 21)
     if (own) return own.id;
     const {section} = findRow(rowId);
     return section ? LAYOUT.AREAS.find((a) => a.opens.section === section.code)?.id || null : null;
@@ -1471,8 +1414,6 @@ $("attentionList").addEventListener("click", (e) => {
     const {task, row, section} = findTask(button.dataset.attentionTask);
     if (!task) return;
 
-    bootstrap.Modal.getInstance($("analyticsModal"))?.hide();
-
     state.flow = [
         {type: "section", id: section.code},
         {type: "row", id: row.id, rowId: row.id},
@@ -1504,7 +1445,24 @@ function tick() {
 }
 
 // ---------------------------------------------------------------- refresh loop
+// cards under the Capacity allocation title
+function renderReportKpis() {
+    const a = state.att;
+    if (!a) return;
+    const card = (icon, cls, label, value) => `
+        <div class="rk-card">
+            <i class="bi ${icon} rk-icon ${cls}"></i>
+            <div><div class="rk-label">${esc(label)}</div><div class="rk-value">${value}</div></div>
+        </div>`;
+    $("reportKpis").innerHTML =
+        card("bi-people", "rk-total", t("kpi_total"), a.total) +
+        card("bi-check-circle-fill", "rk-on", t("kpi_on_shift"), a.present) +
+        card("bi-clock", "rk-late", t("kpi_late"), a.late) +
+        card("bi-exclamation-triangle", "rk-absent", t("kpi_absent"), a.absent);
+}
+
 function renderAll(full = false) {
+    renderReportKpis();
     renderReport();
     renderOffMap();
     updateScene();
@@ -1513,7 +1471,8 @@ function renderAll(full = false) {
         renderFlow(full);
     }
 
-    if ($("analyticsModal")?.classList.contains("show")) {
+    if (analyticsOpen()) {
+        renderAnalytics(false);
         renderWorkTimeAnalytics();
     }
 }

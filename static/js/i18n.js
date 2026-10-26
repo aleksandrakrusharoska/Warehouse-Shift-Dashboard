@@ -23,10 +23,10 @@ const I18N = {
         shift_day: "Day shift",
         shift_afternoon: "Afternoon shift",
         shift_night: "Night shift",
-        layout_hint: "Click an area or a person",
+        layout_hint: "Click an operator or a forklift to scan a badge",
         lg_flow: "Material flow",
         lg_forklift: "Forklift",
-        lg_worker: "Worker",
+        lg_worker: "Operator",
         lg_goods: "Pallets / Goods",
         report_sub: "Staffing and status by area",
         analytics_sub: "Charts and trends of the shifts",
@@ -58,6 +58,10 @@ const I18N = {
 
         attendance: "Attendance",
         att_total: "Total",
+        kpi_total: "Total staff",
+        kpi_on_shift: "On shift",
+        kpi_late: "Late",
+        kpi_absent: "Absent",
         att_absent: "Absent",
         att_present: "Present",
         att_planned: "Planned absenteeism",
@@ -66,6 +70,7 @@ const I18N = {
         att_coverage_detail: "{p} present / {n} needed",
         overview: "Shift overview",
         tasks_covered: "{a} of {b} positions staffed",
+        sec_staffed: "{a} / {b} positions",
         row_tasks_covered: "{a} of {b} tasks staffed",
         open_report: "Open full shift report",
 
@@ -97,8 +102,9 @@ const I18N = {
 
         // report pop-up
         report_title: "Warehouse shift handover",
-        col_area: "Activity area and Position",
-        col_status: "Utilization",
+        col_area: "Role and activity area",
+        col_status: "Status",
+        col_efficiency: "Shift efficiency",
         total_per_shift: "Total per Shift",
         print: "Print",
 
@@ -164,10 +170,10 @@ const I18N = {
         shift_day: "Дневна смена",
         shift_afternoon: "Попладневна смена",
         shift_night: "Ноќна смена",
-        layout_hint: "Кликнете на област или на личност",
+        layout_hint: "Кликнете на оператор или виљушкар за скенирање на беџ",
         lg_flow: "Тек на материјал",
         lg_forklift: "Виљушкар",
-        lg_worker: "Работник",
+        lg_worker: "Оператор",
         lg_goods: "Палети / стока",
         report_sub: "Персонал и статус по област",
         analytics_sub: "Графикони и трендови на смените",
@@ -199,6 +205,10 @@ const I18N = {
 
         attendance: "Присуство",
         att_total: "Вкупно",
+        kpi_total: "Вкупно вработени",
+        kpi_on_shift: "На смена",
+        kpi_late: "Доцнат",
+        kpi_absent: "Отсутни",
         att_absent: "Отсутни",
         att_present: "Присутни",
         att_planned: "Планирано отсуство",
@@ -207,6 +217,7 @@ const I18N = {
         att_coverage_detail: "{p} присутни / {n} потребни",
         overview: "Преглед на смената",
         tasks_covered: "{a} од {b} позиции пополнети",
+        sec_staffed: "{a} / {b} позиции",
         row_tasks_covered: "{a} од {b} задачи пополнети",
         open_report: "Отвори го целиот извештај",
 
@@ -236,8 +247,9 @@ const I18N = {
         since: "од {t}",
 
         report_title: "Предавање на смена – магацин",
-        col_area: "Област на активност и позиција",
-        col_status: "Искористеност",
+        col_area: "Улога и област на активност",
+        col_status: "Статус",
+        col_efficiency: "Ефикасност на смената",
         total_per_shift: "Вкупно по смена",
         print: "Печати",
 

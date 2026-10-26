@@ -12,7 +12,7 @@ REC,IO,Incom. / Outg. WHS,Receiving,,2,Pallets;Deliveries
 SHP,IO,Incom. / Outg. WHS,Shipping,,3,Pallets;Delivery Notes
 H21,IO,Incom. / Outg. WHS,External Hall,,1,
 RPK,IO,Incom. / Outg. WHS,Repack / Kitting,"RM Delivery to OBC, RM Empties from OBC to Repack",2,
-TRM,IO,Incom. / Outg. WHS,Traymaster,,1,
-SRT,IO,Incom. / Outg. WHS,Sorting,,3,
+TRM,SUP,Support & back-up,Traymaster,,1,
+SRT,SUP,Support & back-up,Sorting,,3,
 OTH,SUP,Support & back-up,Other not-planned support actions,"Delivery for sorting, inventory, supporting other actions",0.3,
 ABS,SUP,Support & back-up,Possible back-up,,0.5,

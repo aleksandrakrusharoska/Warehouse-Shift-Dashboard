@@ -6,8 +6,8 @@
 //    Scene3D.setWorkers({ ROW_ID: status })                              – badge colour of the pictograms
 //    Scene3D.resetView()
 //    Scene3D.highlight(areaId, row)                                      – link from the Shift report (null, null = off)
-//  DOM events: "area-hover" (area id or null), "area-click" (area id),
-//  "worker-hover" ({row, x, y} or null), "worker-click" ({row}).
+//  DOM events: "area-hover" (area id or null), "worker-hover" ({row, x, y} or null), "worker-click" ({row}).
+//  Only the people / forklift pictograms are clickable; zones, buildings and labels are not.
 // =====================================================================================
 const L = window.LAYOUT;
 const host = document.getElementById("scene");
@@ -32,7 +32,7 @@ plane.className = "wl-plane";
 stage.appendChild(plane);
 host.appendChild(stage);
 
-let zoneTag = null;   // area id given to everything drawn while it is set (clickable)
+let zoneTag = null;   // area id given to everything drawn while it is set (hover)
 
 function add(parent, style, tag = "div") {
     const el = document.createElement(tag);
@@ -153,12 +153,10 @@ function wheel(cx, y, dia) {
     [[14, y + d - 1], [41, y + d - 1], [150, y + d], [166, y + d]].forEach(([cx, wy]) => wheel(cx, wy, 11 * kz));
 });
 
-// sorting line, traymaster
-zoneTag = "SORT";
-// Keep the sorting line fully inside the Sorting zone, away from the Traymaster boundary.
+// sorting line, traymaster (both in the Support & back-up zone)
+zoneTag = "SUP";
 cub(250, 20, 80, 10, 8, MACH);
 for (let s = 0; s < 4; s++) cub(254 + s * 19, 34, 14, 12, 10, BIN);
-zoneTag = "TRAY";
 cub(430, 16, 34, 20, 24, TRAY);
 
 // incoming / outgoing pallets
@@ -397,9 +395,7 @@ stage.addEventListener("pointerleave", () => {
 });
 stage.addEventListener("click", (e) => {
     const pic = e.target.closest("[data-row]");
-    if (pic) return document.dispatchEvent(new CustomEvent("worker-click", {detail: {row: pic.dataset.row}}));
-    const area = e.target.closest("[data-area]");
-    if (area) document.dispatchEvent(new CustomEvent("area-click", {detail: area.dataset.area}));
+    if (pic) document.dispatchEvent(new CustomEvent("worker-click", {detail: {row: pic.dataset.row}}));
 });
 
 // ---------------------------------------------------------------- public API

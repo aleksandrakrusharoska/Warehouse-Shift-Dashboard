@@ -18,10 +18,13 @@ Report columns that are filled automatically for every line:
 """
 import random
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timedelta
 
 UNDER_THRESHOLD = 0.75
 PLANNED_ABSENTEEISM_PCT = 5
+SHIFT_START_HOURS = (6, 14, 22)   # day, afternoon, night (same shifts as SHIFTS in app.js)
+LATE_AFTER_MINUTES = 15           # first scan later than this after the shift start = late
+EARLY_BEFORE_MINUTES = 30         # a scan up to this long before a shift start belongs to that shift (on time)
 DOUBLE_READ_SECONDS = 2
 RANK = {"I": 1, "L": 2, "U": 3}
 
@@ -392,16 +395,35 @@ def get_overview(conn, team: str | None = None) -> dict:
     return {"sections": sections, "total_target": round(total_target, 1), "total_actual": len(all_people)}
 
 
+def _is_late(started_iso: str) -> bool:
+    """First scan more than LATE_AFTER_MINUTES after the start of its shift. A scan up to
+    EARLY_BEFORE_MINUTES before a shift start counts for that shift (13:50 → 14:00 shift, on time)."""
+    started = datetime.fromisoformat(started_iso)
+    ref = started + timedelta(minutes=EARLY_BEFORE_MINUTES)
+    shift_start = None
+    for hour in sorted(SHIFT_START_HOURS, reverse=True):
+        if ref.hour >= hour:
+            shift_start = ref.replace(hour=hour, minute=0, second=0, microsecond=0)
+            break
+    if shift_start is None:   # after midnight: the night shift started yesterday
+        shift_start = (ref - timedelta(days=1)).replace(hour=max(SHIFT_START_HOURS), minute=0, second=0, microsecond=0)
+    return (started - shift_start).total_seconds() > LATE_AFTER_MINUTES * 60
+
+
 def get_attendance(conn, team: str | None = None) -> dict:
-    """Attendance block of the report. Present = people scanned into at least one task."""
+    """Attendance block of the report. Present = people scanned into at least one task;
+    late = present people whose first scan was more than LATE_AFTER_MINUTES after the shift start."""
     tf, tp = _team_filter(team)
     total = conn.execute("SELECT COUNT(*) FROM employees e WHERE 1=1" + tf, tp).fetchone()[0]
     present = conn.execute("SELECT COUNT(DISTINCT a.badge) FROM assignments a JOIN employees e "
                            "ON e.badge = a.badge WHERE 1=1" + tf, tp).fetchone()[0]
+    starts = conn.execute("SELECT ess.shift_started_at FROM employee_shift_state ess JOIN employees e "
+                          "ON e.badge = ess.badge WHERE ess.badge IN (SELECT badge FROM assignments)" + tf, tp)
+    late = sum(1 for r in starts if _is_late(r["shift_started_at"]))
     needed = conn.execute("SELECT COALESCE(SUM(target), 0) FROM report_rows").fetchone()[0]
     absent = max(total - present, 0)
     return {
-        "total": total, "absent": absent, "present": present,
+        "total": total, "absent": absent, "present": present, "late": late,
         "planned_pct": PLANNED_ABSENTEEISM_PCT,
         "actual_absent_pct": round(absent / total * 100) if total else 0,
         "needed": round(needed, 1), "coverage_ok": present >= needed,
